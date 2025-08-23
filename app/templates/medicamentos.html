@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Medicamentos - FarmaCaRe{% endblock %}
+
+{% block content %}
+<h2>Gestión de Medicamentos</h2>
+<a href="{{ url_for('medicamentos.agregar') }}" class="btn btn-success mb-3">Agregar Medicamento</a>
+
+<!-- Búsqueda -->
+<div class="row mb-3">
+    <div class="col-md-8">
+        <form method="GET" action="{{ url_for('medicamentos.lista') }}">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Buscar medicamento por nombre, código o laboratorio..." value="{{ query or '' }}">
+                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                {% if query %}
+                    <a href="{{ url_for('medicamentos.lista') }}" class="btn btn-sm btn-secondary">Limpiar</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabla -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nombre Comercial</th>
+            <th>Nombre Genérico</th>
+            <th>Laboratorio</th>
+            <th>Presentación</th>
+            <th>Grupo</th>
+            <th>IVA (%)</th>
+            <th>Precio</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for med in medicamentos %}
+        <tr>
+            <td>{{ med.codigo_barras }}</td>
+            <td>{{ med.nombre_comercial }}</td>
+            <td>{{ med.nombre_generico or 'N/A' }}</td>
+            <td>{{ med.laboratorio }}</td>
+            <td>{{ med.presentacion or 'N/A' }}</td>
+            <td>{{ med.grupo }}</td>
+            <td>{{ med.iva }}%</td>
+            <td>${{ med.precio_venta }}</td>
+            <td>
+                <a href="{{ url_for('medicamentos.editar', id=med.id) }}" class="btn btn-sm btn-warning">Editar</a>
+                <a href="{{ url_for('medicamentos.eliminar', id=med.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas eliminar este medicamento?')">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

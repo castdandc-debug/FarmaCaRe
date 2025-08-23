@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Medicamento - FarmaCaRe{% endblock %}
+
+{% block content %}
+<h2>Editar Medicamento</h2>
+<form method="POST">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label>Código de Barras</label>
+                <input type="text" name="codigo_barras" class="form-control" value="{{ med.codigo_barras }}" required>
+            </div>
+            <div class="mb-3">
+                <label>Nombre Comercial</label>
+                <input type="text" name="nombre_comercial" class="form-control" value="{{ med.nombre_comercial }}" required>
+            </div>
+            <div class="mb-3">
+                <label>Nombre Genérico</label>
+                <input type="text" name="nombre_generico" class="form-control" value="{{ med.nombre_generico or '' }}">
+            </div>
+            <div class="mb-3">
+                <label>Laboratorio</label>
+                <input type="text" name="laboratorio" class="form-control" value="{{ med.laboratorio }}" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label>Presentación</label>
+                <input type="text" name="presentacion" class="form-control" value="{{ med.presentacion or '' }}" required>
+            </div>
+            <div class="mb-3">
+                <label>Grupo</label>
+                <select name="grupo" class="form-control" required>
+                    <option value="I" {% if med.grupo == "I" %}selected{% endif %}>Grupo I</option>
+                    <option value="II" {% if med.grupo == "II" %}selected{% endif %}>Grupo II</option>
+                    <option value="III" {% if med.grupo == "III" %}selected{% endif %}>Grupo III</option>
+                    <option value="IV" {% if med.grupo == "IV" %}selected{% endif %}>Grupo IV</option>
+                    <option value="V" {% if med.grupo == "V" %}selected{% endif %}>Grupo V</option>
+                    <option value="IV-Antibiótico" {% if med.grupo == "IV-Antibiótico" %}selected{% endif %}>IV-Antibiótico</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>IVA (%)</label>
+                <input type="number" step="0.01" name="iva" class="form-control" value="{{ med.iva }}" required>
+            </div>
+            <div class="mb-3">
+                <label>Precio de Venta</label>
+                <input type="number" step="0.01" name="precio_venta" class="form-control" value="{{ med.precio_venta }}" required>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a href="{{ url_for('medicamentos.lista') }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

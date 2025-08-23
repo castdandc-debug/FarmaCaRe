@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Agregar Medicamento - FarmaCaRe{% endblock %}
+
+{% block content %}
+<h2>Agregar Medicamento</h2>
+<form method="POST">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label>Código de Barras</label>
+                <input type="text" name="codigo_barras" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Nombre Comercial</label>
+                <input type="text" name="nombre_comercial" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Nombre Genérico</label>
+                <input type="text" name="nombre_generico" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Laboratorio</label>
+                <input type="text" name="laboratorio" class="form-control" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label>Presentación</label>
+                <input type="text" name="presentacion" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Grupo</label>
+                <select name="grupo" class="form-control" required>
+                    <option value="I">Grupo I</option>
+                    <option value="II">Grupo II</option>
+                    <option value="III">Grupo III</option>
+                    <option value="IV">Grupo IV</option>
+                    <option value="V">Grupo V</option>
+                    <option value="IV-Antibiótico">IV-Antibiótico</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>IVA (%)</label>
+                <input type="number" step="0.01" name="iva" class="form-control" value="0" required>
+            </div>
+            <div class="mb-3">
+                <label>Precio de Venta</label>
+                <input type="number" step="0.01" name="precio_venta" class="form-control" required>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="{{ url_for('medicamentos.lista') }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
