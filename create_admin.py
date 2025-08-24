@@ -1,18 +1,18 @@
-from app import create_app
-from app.models import db, Usuario
-from werkzeug.security import generate_password_hash
+# -*- coding: utf-8 -*-
+from app import create_app, db
+from app.models import Usuario
 
 app = create_app()
-app.app_context().push()
 
-if not Usuario.query.filter_by(username="admin").first():
+with app.app_context():
+    db.create_all()
+    
     admin = Usuario(
-        username="admin",
-        password_hash=generate_password_hash("admin123"),
-        rol="administrador"
+        username='admin',
+        rol='administrador'
     )
+    admin.set_password('admin123')
     db.session.add(admin)
     db.session.commit()
-    print("✅ Usuario 'admin' creado con éxito")
-else:
-    print("👤 Usuario 'admin' ya existe")
+
+    print("Administrador creado con éxito.")
