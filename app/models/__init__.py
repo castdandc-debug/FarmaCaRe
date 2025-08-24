@@ -2,6 +2,7 @@
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+
 from app import db
 
 class Usuario(db.Model, UserMixin):
@@ -25,7 +26,7 @@ class Usuario(db.Model, UserMixin):
 class Cliente(db.Model):
     __tablename__ = 'clientes'
     id = db.Column(db.Integer, primary_key=True)
-    cedula = db.Column(db.String(20), unique=True, nullable=False)
+    rfc = db.Column(db.String(20), unique=True, nullable=False)
     nombre = db.Column(db.String(100), nullable=False)
     telefono = db.Column(db.String(15))
     direccion = db.Column(db.String(200))

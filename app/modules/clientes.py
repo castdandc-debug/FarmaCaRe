@@ -12,12 +12,12 @@ def lista():
 @clientes_bp.route('/clientes/crear', methods=['GET', 'POST'])
 def crear():
     if request.method == 'POST':
-        cedula = request.form['cedula']
-        if Cliente.query.filter_by(cedula=cedula).first():
-            flash('Cédula ya registrada.')
+        rfc = request.form['rfc']
+        if Cliente.query.filter_by(rfc=rfc).first():
+            flash('RFC ya registrado.')
             return redirect(url_for('clientes.crear'))
         cli = Cliente(
-            cedula=cedula,
+            rfc=rfc,
             nombre=request.form['nombre'],
             telefono=request.form['telefono'],
             direccion=request.form['direccion']
@@ -32,7 +32,7 @@ def crear():
 def editar(id):
     c = Cliente.query.get_or_404(id)
     if request.method == 'POST':
-        c.cedula = request.form['cedula']
+        c.rfc = request.form['rfc']
         c.nombre = request.form['nombre']
         c.telefono = request.form['telefono']
         c.direccion = request.form['direccion']

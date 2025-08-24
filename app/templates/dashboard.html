@@ -1,20 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - FarmaCaRe{% endblock %}
+{% block title %}Panel de Funciones - FarmaCaRe{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Dashboard - FarmaCaRe</h2>
-    <div class="text-center mb-4">
-        <img src="{{ url_for('static', filename='images/grupo-medico-care-logo.png') }}" alt="Grupo Médico Care" style="width: 300px; opacity: 0.35;">
-    </div>
+    <h2>Panel de Funciones - FarmaCaRe</h2>
     <div class="row">
         <div class="col-md-6">
             <a href="{{ url_for('usuarios.lista') }}" class="btn btn-success w-100 mb-2">👥 Usuarios</a>
             <a href="{{ url_for('clientes.lista') }}" class="btn btn-primary w-100 mb-2">👤 Clientes</a>
             <a href="{{ url_for('medicamentos.lista') }}" class="btn btn-warning w-100 mb-2">💊 Medicamentos</a>
             <a href="{{ url_for('proveedores.lista') }}" class="btn btn-info w-100 mb-2">🏢 Proveedores</a>
-            <a href="{{ url_for('ventas.lista') }}" class="btn btn-danger w-100 mb-2">🛒 Ventas</a>
+            <a href="{{ url_for('ventas.nueva') }}" class="btn btn-danger w-100 mb-2">🛒 Ventas</a>
         </div>
     </div>
 </div>

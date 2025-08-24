@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Venta - FarmaCaRe{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Nueva Venta</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="cliente_id">Cliente (Opcional)</label>
+            <select name="cliente_id" id="cliente_id" class="form-control">
+                <option value="">-- Sin cliente --</option>
+                {% for c in clientes %}
+                <option value="{{ c.id }}">{{ c.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="medicamento">Buscar Medicamento</label>
+            <select name="medicamento" id="medicamento" class="form-control">
+                <option value="">-- Seleccionar medicamento --</option>
+                {% for m in medicamentos %}
+                <option value="{{ m.id }}">{{ m.nombre_comercial }} ({{ m.codigo_barras }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="cantidad">Cantidad</label>
+            <input type="number" name="cantidad" id="cantidad" class="form-control" min="1">
+        </div>
+
+        <button type="submit" class="btn btn-success">Agregar al carrito</button>
+    </form>
+
+    <div class="mt-4">
+        <h3>Carrito de Compra</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Medicamento</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí iría el carrito dinámico -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        <h3>Total</h3>
+        <p><strong>Total: $0.00</strong></p>
+        <button type="button" class="btn btn-primary">Imprimir Ticket</button>
+    </div>
+</div>
+{% endblock %}

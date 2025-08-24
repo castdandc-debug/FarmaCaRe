@@ -1,20 +1,15 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from app.models import db, Venta, Cliente, Usuario, Medicamento
+from app.models import db, Venta, Cliente, Medicamento
 
 ventas_bp = Blueprint('ventas', __name__)
-
-@ventas_bp.route('/ventas')
-def lista():
-    ventas = Venta.query.all()
-    return render_template('ventas.html', ventas=ventas)
 
 @ventas_bp.route('/ventas/nueva', methods=['GET', 'POST'])
 def nueva():
     clientes = Cliente.query.all()
     medicamentos = Medicamento.query.all()
     if request.method == 'POST':
-        cliente_id = int(request.form['cliente_id'])
+        cliente_id = int(request.form['cliente_id']) if request.form['cliente_id'] else None
         items = []
         total = 0
         for key, value in request.form.items():
@@ -43,3 +38,8 @@ def nueva():
         return redirect(url_for('ventas.lista'))
 
     return render_template('nueva_venta.html', clientes=clientes, medicamentos=medicamentos)
+
+@ventas_bp.route('/ventas')
+def lista():
+    ventas = Venta.query.all()
+    return render_template('ventas.html', ventas=ventas)
