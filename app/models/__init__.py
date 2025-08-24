@@ -66,3 +66,15 @@ class Venta(db.Model):
 
     cliente = db.relationship('Cliente')
     usuario = db.relationship('Usuario')
+
+
+class Compra(db.Model):
+    __tablename__ = 'compras'
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.DateTime, default=datetime.now)
+    proveedor_id = db.Column(db.Integer, db.ForeignKey('proveedores.id'))
+    total = db.Column(db.Float, nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
+
+    proveedor = db.relationship('Proveedor')
+    usuario = db.relationship('Usuario')

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Inventario - FarmaCaRe{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Inventario</h2>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Stock</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in medicamentos %}
+            <tr>
+                <td>{{ m.codigo_barras }}</td>
+                <td>{{ m.nombre_comercial }}</td>
+                <td>{{ m.stock }}</td>
+                <td>{{ m.precio_venta }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

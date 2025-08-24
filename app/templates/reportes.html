@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes e Inventarios - FarmaCaRe{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Reportes e Inventarios</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <a href="{{ url_for('reportes.inventario') }}" class="btn btn-success w-100 mb-2">📋 Inventario</a>
+            <a href="{{ url_for('reportes.ventas') }}" class="btn btn-primary w-100 mb-2">💰 Ventas</a>
+            <a href="{{ url_for('reportes.compras') }}" class="btn btn-info w-100 mb-2">📦 Compras</a>
+            <a href="{{ url_for('reportes.clientes') }}" class="btn btn-warning w-100 mb-2">👥 Clientes</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
