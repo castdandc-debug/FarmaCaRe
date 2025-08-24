@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Usuario - FarmaCaRe{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Crear Nuevo Usuario</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label>Nombre de Usuario</label>
+            <input type="text" name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Rol</label>
+            <select name="rol" class="form-control" required>
+                <option value="administrador">Administrador</option>
+                <option value="farmacéutico">Farmacéutico</option>
+                <option value="cajero">Cajero</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{{ url_for('usuarios.lista') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

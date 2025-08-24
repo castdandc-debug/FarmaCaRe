@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Usuario - FarmaCaRe{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Editar Usuario</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label>Nombre de Usuario</label>
+            <input type="text" name="username" class="form-control" value="{{ usuario.username }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Rol</label>
+            <select name="rol" class="form-control" required>
+                <option value="administrador" {% if usuario.rol == "administrador" %}selected{% endif %}>Administrador</option>
+                <option value="farmacéutico" {% if usuario.rol == "farmacéutico" %}selected{% endif %}>Farmacéutico</option>
+                <option value="cajero" {% if usuario.rol == "cajero" %}selected{% endif %}>Cajero</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <a href="{{ url_for('usuarios.lista') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
