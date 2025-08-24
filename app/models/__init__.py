@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
-# Definir db como objeto global
-db = SQLAlchemy()
+# La instancia `db` viene de `app/__init__.py`
+from app import db
 
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
@@ -16,9 +14,11 @@ class Usuario(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now)
 
     def set_password(self, password):
+        from werkzeug.security import generate_password_hash
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
+        from werkzeug.security import check_password_hash
         return check_password_hash(self.password, password)
 
     def __repr__(self):
