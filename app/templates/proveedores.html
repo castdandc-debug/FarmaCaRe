@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Proveedores - FarmaCaRe{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Gestión de Proveedores</h2>
+    <a href="{{ url_for('proveedores.crear') }}" class="btn btn-success mb-3">+ Nuevo Proveedor</a>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>RUC</th>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Email</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in proveedores %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.ruc }}</td>
+                <td>{{ p.nombre }}</td>
+                <td>{{ p.telefono }}</td>
+                <td>{{ p.direccion }}</td>
+                <td>{{ p.email }}</td>
+                <td>
+                    <a href="{{ url_for
