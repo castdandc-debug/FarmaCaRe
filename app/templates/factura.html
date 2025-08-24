@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Factura</h1>
+<p>Nota ID: {{ nota.id }}</p>
+<p>Fecha: {{ nota.fecha }}</p>
+<p>Producto: {{ nota.producto_id }}</p>
+<p>Cantidad: {{ nota.cantidad }}</p>
+<p>Total: {{ nota.importe_total }}</p>
+<form method="POST">
+    {% if not nota.cliente_id %}
+    <input type="text" name="cliente_nombre" placeholder="Nombre Cliente" required>
+    <input type="text" name="cliente_rfc" placeholder="RFC Cliente" required>
+    {% endif %}
+    <button type="submit">Generar Factura</button>
+</form>
+{% endblock %}

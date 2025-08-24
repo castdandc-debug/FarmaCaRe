@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Ajustar Inventario</h1>
+<p>Producto: {{ producto.nombre_comercial if producto.nombre_comercial else producto.nombre_comun }}</p>
+<p>Cantidad Actual: {{ inventario.cantidad }}</p>
+<form method="POST">
+    <input type="number" name="cantidad_ajuste" placeholder="Cantidad a ajustar" required>
+    <textarea name="razon" placeholder="Razón del ajuste" required></textarea>
+    <button type="submit">Ajustar</button>
+</form>
+{% endblock %}

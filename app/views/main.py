@@ -1,28 +1,30 @@
-# -*- coding: utf-8 -*-
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
-from app.models import db, Usuario
+import io
+import base64
+import matplotlib.pyplot as plt
+from app.models import Salida
 
-main_bp = Blueprint('main', __name__)
+main_bp = Blueprint('main', __name__, template_folder='../templates')
 
-@main_bp.route('/')
+@main_bp.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', user=current_user)
+    if current_user.rol == 'Admin':
+        return render_template('dashboard_admin.html')
+    return render_template('dashboard_caja.html')
 
-@main_bp.route('/perfil')
+@main_bp.route('/contabilidad')
 @login_required
-def perfil():
-    return render_template('perfil.html', user=current_user)
-
-@main_bp.route('/perfil/editar', methods=['GET', 'POST'])
-@login_required
-def editar_perfil():
-    if request.method == 'POST':
-        current_user.username = request.form['username']
-        if request.form['password']:
-            current_user.set_password(request.form['password'])
-        db.session.commit()
-        flash('Perfil actualizado correctamente.')
-        return redirect(url_for('main.perfil'))
-    return render_template('editar_perfil.html', user=current_user)
+def contabilidad():
+    if current_user.rol != 'Admin':
+        return redirect(url_for('main.dashboard'))
+    ventas = Salida.query.all()
+    fig, ax = plt.subplots()
+    ax.plot([v.fecha for v in ventas], [v.importe_total for v in ventas])
+    ax.set_title('Ventas por Fecha')
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+    return render_template('contabilidad.html', graph=img_base64)

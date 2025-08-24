@@ -13,17 +13,16 @@ def lista():
 @usuarios_bp.route('/usuarios/crear', methods=['GET', 'POST'])
 def crear():
     if request.method == 'POST':
-        username = request.form['username']
+        nombre = request.form['nombre']  # ✅ Cambiado de 'username' a 'nombre'
         rol = request.form['rol']
-        if Usuario.query.filter_by(username=username).first():
+        if Usuario.query.filter_by(nombre=nombre).first():
             flash('Error: El usuario ya existe.')
             return redirect(url_for('usuarios.crear'))
-        hashed_password = generate_password_hash('123456')
-        nuevo = Usuario(username=username, rol=rol)
+        nuevo = Usuario(nombre=nombre, rol=rol)
         nuevo.set_password('123456')
         db.session.add(nuevo)
         db.session.commit()
-        flash(f'Usuario "{username}" creado. Contraseña: 123456')
+        flash(f'Usuario "{nombre}" creado. Contraseña: 123456')
         return redirect(url_for('usuarios.lista'))
     return render_template('crear_usuario.html')
 
@@ -31,7 +30,7 @@ def crear():
 def editar(id):
     u = Usuario.query.get_or_404(id)
     if request.method == 'POST':
-        u.username = request.form['username']
+        u.nombre = request.form['nombre']  # ✅ Cambiado de 'username' a 'nombre'
         u.rol = request.form['rol']
         db.session.commit()
         flash('Usuario actualizado.')
@@ -41,7 +40,7 @@ def editar(id):
 @usuarios_bp.route('/usuarios/eliminar/<int:id>', methods=['POST'])
 def eliminar(id):
     u = Usuario.query.get_or_404(id)
-    if u.username != 'admin':
+    if u.nombre != 'admin':
         db.session.delete(u)
         db.session.commit()
         flash('Usuario eliminado.')

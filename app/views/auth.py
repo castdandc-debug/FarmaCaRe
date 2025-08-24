@@ -1,22 +1,20 @@
-# -*- coding: utf-8 -*-
-from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from app.models import Usuario
-from app import db
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_user, logout_user, login_required, current_user
+from app.models import db, Usuario
+from werkzeug.security import generate_password_hash, check_password_hash
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__, template_folder='../templates')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = Usuario.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            login_user(user)
+        nombre = request.form['nombre']
+        contraseña = request.form['contraseña']
+        usuario = Usuario.query.filter_by(nombre=nombre).first()
+        if usuario and check_password_hash(usuario.contraseña, contraseña):
+            login_user(usuario)
             return redirect(url_for('main.dashboard'))
-        else:
-            flash('Credenciales inválidas')
+        flash('Nombre de usuario o contraseña incorrectos.', 'error')
     return render_template('login.html')
 
 @auth_bp.route('/logout')

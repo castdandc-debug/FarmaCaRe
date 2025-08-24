@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Registro de "No Hay"</h1>
+{% if nohays %}
+<ul>
+    {% for nohay in nohays %}
+    <li>{{ nohay.nombre }} - {{ nohay.tipo }}: {{ nohay.descripcion }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+<h2>Crear Nuevo Registro</h2>
+<form method="POST" action="{{ url_for('nohay.crear') }}">
+    <input type="text" name="nombre" placeholder="Nombre" required>
+    <select name="tipo" required>
+        <option value="Poco inventario">Poco inventario</option>
+        <option value="No tiene proveedor">No tiene proveedor</option>
+        <option value="Descontinuado">Descontinuado</option>
+        <option value="No existe">No existe</option>
+    </select>
+    <textarea name="descripcion" placeholder="Descripción"></textarea>
+    <button type="submit">Registrar</button>
+</form>
+{% endblock %}
