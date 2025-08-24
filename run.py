@@ -1,4 +1,4 @@
-k# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import os
 from app import create_app
 from app.models import db
