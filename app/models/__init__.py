@@ -24,17 +24,23 @@ class Usuario(db.Model, UserMixin):
     def get_id(self):
         return str(self.id)
 
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_anonymous(self):
-        return False
-
     def __repr__(self):
         return f'<Usuario {self.username}>'
+
+
+class Medicamento(db.Model):
+    __tablename__ = 'medicamentos'
+
+    id = db.Column(db.Integer, primary_key=True)
+    codigo_barras = db.Column(db.String(50), unique=True, nullable=False)
+    nombre_comercial = db.Column(db.String(100), nullable=False)
+    nombre_generico = db.Column(db.String(100))
+    laboratorio = db.Column(db.String(100), nullable=False)
+    presentacion = db.Column(db.String(100), nullable=False)
+    grupo = db.Column(db.String(20), nullable=False)
+    iva = db.Column(db.Float, default=0.0)
+    precio_venta = db.Column(db.Float, nullable=False)
+    stock = db.Column(db.Integer, default=0)
+
+    def __repr__(self):
+        return f'<Medicamento {self.nombre_comercial}>'
