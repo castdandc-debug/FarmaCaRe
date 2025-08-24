@@ -12,7 +12,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         user = Usuario.query.filter_by(username=username).first()
-        if user and user.password == password:
+        if user and user.check_password(password):
             login_user(user)
             return redirect(url_for('main.dashboard'))
         else:

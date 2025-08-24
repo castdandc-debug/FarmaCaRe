@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Perfil - FarmaCaRe{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Editar Perfil</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label>Nombre de Usuario</label>
+            <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Nueva Contraseña (opcional)</label>
+            <input type="password" name="password" class="form-control" placeholder="Dejar vacío si no deseas cambiar">
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <a href="{{ url_for('main.perfil') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil - FarmaCaRe{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Mi Perfil</h2>
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Nombre:</strong> {{ user.username }}</p>
+            <p><strong>Rol:</strong> {{ user.rol }}</p>
+            <a href="{{ url_for('main.editar_perfil') }}" class="btn btn-primary">Editar Perfil</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
