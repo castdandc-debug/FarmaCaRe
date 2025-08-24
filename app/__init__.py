@@ -18,11 +18,12 @@ def create_app():
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'supersecretkey')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///farma.db')
 
+    # Inicializa db con la app
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
 
-    # Registrar blueprints desde la carpeta `views`
+    # Registrar blueprints
     from app.views.main import main_bp
     from app.views.auth import auth_bp
     from app.modules.medicamentos import medicamentos_bp
