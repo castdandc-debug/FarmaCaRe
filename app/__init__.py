@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import os
 
-# Crear una sola instancia de SQLAlchemy
 db = SQLAlchemy()
 login_manager = LoginManager()
 
@@ -18,7 +17,6 @@ def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'supersecretkey')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///farma.db')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Inicializa db con la app
     db.init_app(app)
@@ -30,9 +28,11 @@ def create_app():
     from app.views.auth import auth_bp
     from app.views.main import main_bp
     from app.modules.medicamentos import medicamentos_bp
+    from app.modules.usuarios import usuarios_bp  # ✅ Importar usuarios_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(medicamentos_bp)
+    app.register_blueprint(usuarios_bp)  # ✅ Registrar usuarios_bp
 
     return app
