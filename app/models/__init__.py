@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
-from flask_login import UserMixin
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
-class Usuario(UserMixin):
-    def __init__(self, id=None, username=None, password=None, rol=None):
-        self.id = id
-        self.username = username
-        self.password = password
-        self.rol = rol or 'usuario'
-        self.created_at = datetime.now()
+# Definir db como objeto global
+db = SQLAlchemy()
+
+class Usuario(db.Model):
+    __tablename__ = 'usuarios'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+    rol = db.Column(db.String(20), default='usuario')
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
