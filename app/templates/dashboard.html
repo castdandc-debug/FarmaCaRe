@@ -1,43 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - FarmaCaRe{% endblock %}
-
 {% block content %}
 <div class="container mt-4">
-    <h2>Bienvenido, {{ user.username }} 👋</h2>
-    <p>Este es el sistema de gestión de farmacia <strong>FarmaCaRe</strong>.</p>
-
-    <div class="card">
-        <div class="card-header">
-            <h3>Funciones disponibles</h3>
-        </div>
-        <div class="card-body">
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <a href="{{ url_for('medicamentos.lista') }}" class="text-decoration-none">
-                        📦 Gestión de medicamentos
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="{{ url_for('usuarios.lista') }}" class="text-decoration-none">
-                        👤 Gestión de Usuarios
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="{{ url_for('main.perfil') }}" class="text-decoration-none">
-                        👤 Mi Perfil
-                    </a>
-                </li>
-                <li class="list-group-item text-muted">
-                    🛒 Notas de venta (próximamente)
-                </li>
-                <li class="list-group-item text-muted">
-                    📊 Reportes e inventario (próximamente)
-                </li>
-                <li class="list-group-item text-muted">
-                    📄 Facturación electrónica (próximamente)
-                </li>
-            </ul>
+    <h2>Dashboard - FarmaCaRe</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <a href="{{ url_for('usuarios.lista') }}" class="btn btn-success w-100 mb-2">👥 Usuarios</a>
+            <a href="{{ url_for('clientes.lista') }}" class="btn btn-primary w-100 mb-2">👤 Clientes</a>
+            <a href="{{ url_for('medicamentos.lista') }}" class="btn btn-warning w-100 mb-2">💊 Medicamentos</a>
+            <a href="{{ url_for('proveedores.lista') }}" class="btn btn-info w-100 mb-2">🏢 Proveedores</a>
+            <a href="{{ url_for('ventas.lista') }}" class="btn btn-danger w-100 mb-2">🛒 Ventas</a>
         </div>
     </div>
 </div>
