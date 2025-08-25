@@ -12,12 +12,14 @@
 </head>
 <body>
     <div class="background-wrap"></div>
-    <header class="navbar navbar-expand-lg">
-        <div class="container-fluid bg-dark p-2"> <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
+    <header class="navbar navbar-expand-lg bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
                 <img src="{{ url_for('static', filename='images/LOGO.png') }}" alt="Logo FarmaCaRe" height="40">
             </a>
             <div class="navbar-text ms-auto d-flex align-items-center">
-                <a href="{{ url_for('main.profile') }}" class="btn btn-profile text-white me-2"> Usuario: {{ current_user.nombre }} ({{ current_user.rol }})
+                <a href="{{ url_for('main.profile') }}" class="btn btn-profile text-white me-2">
+                    Usuario: {{ current_user.nombre }} ({{ current_user.rol }})
                 </a>
                 <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Cerrar Sesión</a>
             </div>
