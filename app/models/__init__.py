@@ -2,7 +2,6 @@
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-
 from app import db
 
 class Usuario(db.Model, UserMixin):
@@ -78,3 +77,58 @@ class Compra(db.Model):
 
     proveedor = db.relationship('Proveedor')
     usuario = db.relationship('Usuario')
+
+
+class Entrada(db.Model):
+    __tablename__ = 'entradas'
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.DateTime, default=datetime.now)
+    producto_id = db.Column(db.Integer)
+    producto_tipo = db.Column(db.String(20))
+    cantidad = db.Column(db.Integer, nullable=False)
+    importe_unitario = db.Column(db.Float, nullable=False)
+    importe_antes_iva = db.Column(db.Float)
+    iva_porcentaje = db.Column(db.Float)
+    valor_iva = db.Column(db.Float)
+    importe_total = db.Column(db.Float)
+    proveedor_id = db.Column(db.Integer, db.ForeignKey('proveedores.id'))
+    compra_id = db.Column(db.Integer, db.ForeignKey('compra.id'), nullable=True)
+
+
+class Salida(db.Model):
+    __tablename__ = 'salidas'
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.DateTime, default=datetime.now)
+    producto_id = db.Column(db.Integer)
+    producto_tipo = db.Column(db.String(20))
+    cantidad = db.Column(db.Integer, nullable=False)
+    importe_unitario = db.Column(db.Float, nullable=False)
+    importe_antes_iva = db.Column(db.Float)
+    iva_porcentaje = db.Column(db.Float)
+    valor_iva = db.Column(db.Float)
+    importe_total = db.Column(db.Float)
+    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=True)
+    eliminada = db.Column(db.Boolean, default=False)
+
+
+class Inventario(db.Model):
+    __tablename__ = 'inventario'
+    id = db.Column(db.Integer, primary_key=True)
+    producto_id = db.Column(db.Integer)
+    producto_tipo = db.Column(db.String(20))
+    cantidad = db.Column(db.Integer, default=0)
+    valor_inventario = db.Column(db.Float, default=0.0)
+    punto_reorden = db.Column(db.Integer, default=10)
+    cantidad_faltante = db.Column(db.Integer, default=0)
+    fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class AjusteInventario(db.Model):
+    __tablename__ = 'ajustes_inventario'
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.DateTime, default=datetime.now)
+    producto_id = db.Column(db.Integer)
+    producto_tipo = db.Column(db.String(20))
+    cantidad_ajuste = db.Column(db.Integer, nullable=False)
+    razon = db.Column(db.Text)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
