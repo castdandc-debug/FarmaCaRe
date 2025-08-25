@@ -42,14 +42,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .navbar-brand img {
-    height: 60px;
-    width: 150px;
-    filter: brightness(1.2) drop-shadow(0 0 5px rgba(0,0,0,0.2));
+    height: 60px; /* Se ajusta el tamaño del logo */
+    width: auto; /* Mantiene la proporción */
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.2));
     transition: filter 0.3s ease-in-out;
 }
 
 .navbar-brand img:hover {
-    filter: brightness(1.5);
+    filter: brightness(1.1);
 }
 
 /* Botones con color vibrante y texto blanco */
@@ -64,15 +64,17 @@ h1, h2, h3, h4, h5, h6 {
     border-color: #2e8b46;
 }
 
+/* Estilo para el botón de perfil y cerrar sesión */
 .btn-secondary {
-    background-color: var(--color-primary); /* Color verde del logo */
-    border-color: var(--color-primary);
-    color: #fff; /* Asegura que el texto del botón sea blanco */
+    background-color: var(--color-secondary); /* Color gris oscuro como fondo */
+    border-color: var(--color-secondary);
+    color: #fff; /* Texto blanco */
+    font-weight: 700;
 }
 
 .btn-secondary:hover {
-    background-color: #1a4d48;
-    border-color: #1a4d48;
+    background-color: #3d3d3d;
+    border-color: #3d3d3d;
 }
 
 /* Estilo para el botón de perfil de usuario */
@@ -126,6 +128,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #155724;
     border-color: #c3e6cb;
 }
+
 .alert-danger {
     background-color: #f8d7da;
     color: #721c24;
