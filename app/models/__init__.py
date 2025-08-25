@@ -3,6 +3,8 @@ from flask_login import UserMixin
 from datetime import datetime
 from app import db
 
+# === MODELOS ===
+
 class Usuario(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), unique=True, nullable=False)
@@ -101,6 +103,14 @@ class Compra(db.Model):
     fecha_compra = db.Column(db.DateTime, default=datetime.utcnow)
     proveedor_id = db.Column(db.Integer, db.ForeignKey('proveedor.id'), nullable=False)
     entradas = db.relationship('Entrada', backref='compra', lazy=True)
+
+
+class Venta(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=True)
+    total = db.Column(db.Float, nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
 
 
 class Salida(db.Model):
