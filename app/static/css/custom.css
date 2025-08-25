@@ -4,7 +4,7 @@
     --color-secondary: #4a4a4a; /* Gris oscuro para el texto */
     --color-background: #f7f7f7; /* Blanco roto para el fondo */
     --color-light: #e0e0e0; /* Gris claro para bordes */
-    --color-vibrant-green: #33a362; /* Nuevo color verde más vibrante para los botones */
+    --color-vibrant-green: #33a362; /* Nuevo color verde más vibrante para los botones de módulos */
 }
 
 /* Tipografía vintage */
@@ -42,8 +42,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .navbar-brand img {
-    height: 60px; /* Se ajusta el tamaño del logo */
-    width: auto; /* Mantiene la proporción */
+    height: 60px;
+    width: auto;
     filter: drop-shadow(0 0 5px rgba(0,0,0,0.2));
     transition: filter 0.3s ease-in-out;
 }
@@ -52,11 +52,11 @@ h1, h2, h3, h4, h5, h6 {
     filter: brightness(1.1);
 }
 
-/* Botones con color vibrante y texto blanco */
+/* Estilo para los botones de módulos */
 .btn-primary {
-    background-color: var(--color-vibrant-green); /* Usamos el nuevo color verde */
+    background-color: var(--color-vibrant-green);
     border-color: var(--color-vibrant-green);
-    color: #fff; /* Texto blanco */
+    color: #fff;
 }
 
 .btn-primary:hover {
@@ -64,17 +64,17 @@ h1, h2, h3, h4, h5, h6 {
     border-color: #2e8b46;
 }
 
-/* Estilo para el botón de perfil y cerrar sesión */
+/* Estilo para el botón de "Cerrar Sesión" */
 .btn-secondary {
-    background-color: var(--color-primary); /* Color verde como fondo */
-    border-color: var(--color-primary);
-    color: var(--color-secondary); /* Texto gris oscuro */
+    background-color: var(--color-vibrant-green); /* Fondo verde como los módulos */
+    border-color: var(--color-vibrant-green);
+    color: #fff; /* Texto blanco */
     font-weight: 700;
 }
 
 .btn-secondary:hover {
-    background-color: #1a4d48;
-    border-color: #1a4d48;
+    background-color: #2e8b46;
+    border-color: #2e8b46;
 }
 
 /* Estilo para el botón de perfil de usuario */
