@@ -12,7 +12,6 @@ def load_user(user_id):
     from app.models import Usuario
     return Usuario.query.get(int(user_id))
 
-
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'supersecretkey')
@@ -24,7 +23,7 @@ def create_app():
 
     # Importar blueprints
     from app.views.auth import auth_bp
-    from app.views.main import main_bp
+    from app.routes.main import main_bp # <<--- ¡Aquí está la corrección!
     from app.modules.usuarios import usuarios_bp
     from app.modules.medicamentos import medicamentos_bp
     from app.modules.clientes import clientes_bp
