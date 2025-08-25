@@ -11,13 +11,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="background-wrap"></div>
     <header class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
                 <img src="{{ url_for('static', filename='images/farmacare-logo.png') }}" alt="Logo FarmaCaRe" height="40">
             </a>
             <div class="navbar-text ms-auto d-flex align-items-center">
-                <span class="me-3">Bienvenido, {{ current_user.nombre }} ({{ current_user.rol }})</span>
+                <a href="{{ url_for('main.profile') }}" class="btn btn-profile">
+                    Usuario: {{ current_user.nombre }} ({{ current_user.rol }})
+                </a>
                 <a href="{{ url_for('auth.logout') }}" class="btn btn-primary">Cerrar Sesión</a>
             </div>
         </div>
