@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user, login_required
 from app.models import Usuario
-from werkzeug.security import check_password_hash
 
 auth_bp = Blueprint('auth', __name__, template_folder='../templates')
 
@@ -11,7 +10,6 @@ def login():
     if request.method == 'POST':
         nombre = request.form['nombre']
         contraseña = request.form['contraseña']
-        # Buscar usuario
         usuario = Usuario.query.filter_by(nombre=nombre).first()
         if usuario and usuario.check_password(contraseña):
             login_user(usuario)
