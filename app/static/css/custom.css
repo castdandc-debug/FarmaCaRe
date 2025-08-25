@@ -66,15 +66,15 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Estilo para el botón de perfil y cerrar sesión */
 .btn-secondary {
-    background-color: var(--color-secondary); /* Color gris oscuro como fondo */
-    border-color: var(--color-secondary);
-    color: #fff; /* Texto blanco */
+    background-color: var(--color-primary); /* Color verde como fondo */
+    border-color: var(--color-primary);
+    color: var(--color-secondary); /* Texto gris oscuro */
     font-weight: 700;
 }
 
 .btn-secondary:hover {
-    background-color: #3d3d3d;
-    border-color: #3d3d3d;
+    background-color: #1a4d48;
+    border-color: #1a4d48;
 }
 
 /* Estilo para el botón de perfil de usuario */
