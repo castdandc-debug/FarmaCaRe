@@ -23,7 +23,7 @@ def create_app():
 
     # Importar blueprints
     from app.views.auth import auth_bp
-    from app.routes.main import main_bp # <<--- ¡Aquí está la corrección!
+    from app.routes.main import main # <<--- ¡Aquí está la corrección!
     from app.modules.usuarios import usuarios_bp
     from app.modules.medicamentos import medicamentos_bp
     from app.modules.clientes import clientes_bp
@@ -36,7 +36,7 @@ def create_app():
 
     # Registrar blueprints
     app.register_blueprint(auth_bp)
-    app.register_blueprint(main_bp)
+    app.register_blueprint(main) # <<--- ¡Aquí está la corrección!
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(medicamentos_bp)
     app.register_blueprint(clientes_bp)
