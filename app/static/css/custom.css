@@ -1,57 +1,99 @@
-/* Colores principales */
+/* Colores vintage minimalistas */
 :root {
-    --primary-color: #007B8E; /* Verde oscuro */
-    --secondary-color: #f0f0f0; /* Gris claro */
-    --text-color: #333;
-    --border-color: #ccc;
+    --color-primary: #1e5954; /* Verde oscuro del logo */
+    --color-secondary: #4a4a4a; /* Gris oscuro para el texto */
+    --color-background: #f7f7f7; /* Blanco roto para el fondo */
+    --color-light: #e0e0e0; /* Gris claro para bordes */
 }
 
-/* Estilos globales */
+/* Tipografía vintage */
 body {
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-secondary);
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    color: var(--color-primary);
+}
+
+/* Navbar y logo */
 .navbar {
-    background-color: var(--primary-color) !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid var(--color-light);
 }
 
-.navbar-brand {
-    color: white !important;
-    font-weight: bold;
+.navbar-brand img {
+    filter: brightness(0.8);
+    transition: filter 0.3s ease-in-out;
 }
 
-.navbar-nav .nav-link {
-    color: white !important;
+.navbar-brand img:hover {
+    filter: brightness(1);
 }
 
-.btn-success {
-    background-color: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
-}
-
+/* Botones */
 .btn-primary {
-    background-color: #0056b3 !important;
-    border-color: #0056b3 !important;
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+    background-color: #1a4d48;
+    border-color: #1a4d48;
+}
+
+.btn-secondary {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+
+.btn-secondary:hover {
+    background-color: #3d3d3d;
+    border-color: #3d3d3d;
+}
+
+/* Estilos de tarjetas y contenedores */
+.container {
+    padding-top: 2rem;
 }
 
 .card {
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 1px solid var(--color-light);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-.form-control {
+/* Estilos para el dashboard */
+.dashboard-links a {
+    text-decoration: none;
+    color: var(--color-secondary);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    border: 1px solid var(--color-light);
     border-radius: 5px;
-    border: 1px solid var(--border-color);
+    transition: all 0.3s ease-in-out;
 }
 
-.alert {
-    border-radius: 5px;
+.dashboard-links a:hover {
+    background-color: var(--color-light);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
-/* Fondo de la página principal */
-.container {
-    margin-top: 2rem;
+/* Mensajes de flash */
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
 }
