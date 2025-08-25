@@ -24,7 +24,34 @@ class Usuario(db.Model, UserMixin):
         return str(self.id)
 
 
+class Cliente(db.Model):
+    __tablename__ = 'clientes'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    rfc = db.Column(db.String(20), unique=True)
+    direccion = db.Column(db.String(200))
+    telefono = db.Column(db.String(20))
+    email = db.Column(db.String(100))
+    contacto = db.Column(db.String(100))
+    telefono_contacto = db.Column(db.String(20))
+    fecha_modificacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class Proveedor(db.Model):
+    __tablename__ = 'proveedores'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    rfc = db.Column(db.String(20), unique=True)
+    direccion = db.Column(db.String(200))
+    telefono = db.Column(db.String(20))
+    email = db.Column(db.String(100))
+    contacto = db.Column(db.String(100))
+    telefono_contacto = db.Column(db.String(20))
+    fecha_modificacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 class Medicamento(db.Model):
+    __tablename__ = 'medicamentos'
     id = db.Column(db.Integer, primary_key=True)
     codigo_barras = db.Column(db.String(50), unique=True, nullable=False)
     nombre_comercial = db.Column(db.String(100), nullable=False)
@@ -39,6 +66,7 @@ class Medicamento(db.Model):
 
 
 class DispositivoMedico(db.Model):
+    __tablename__ = 'dispositivos_medicos'
     id = db.Column(db.Integer, primary_key=True)
     codigo_barras = db.Column(db.String(50), unique=True, nullable=False)
     nombre_comercial = db.Column(db.String(100), nullable=False)
@@ -51,31 +79,8 @@ class DispositivoMedico(db.Model):
     fecha_modificacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-class Proveedor(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    rfc = db.Column(db.String(20), unique=True)
-    direccion = db.Column(db.String(200))
-    telefono = db.Column(db.String(20))
-    email = db.Column(db.String(100))
-    contacto = db.Column(db.String(100))
-    telefono_contacto = db.Column(db.String(20))
-    fecha_modificacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-
-class Cliente(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    rfc = db.Column(db.String(20), unique=True)
-    direccion = db.Column(db.String(200))
-    telefono = db.Column(db.String(20))
-    email = db.Column(db.String(100))
-    contacto = db.Column(db.String(100))
-    telefono_contacto = db.Column(db.String(20))
-    fecha_modificacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-
 class NoHay(db.Model):
+    __tablename__ = 'no_hay'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     tipo = db.Column(db.String(50))
@@ -83,7 +88,18 @@ class NoHay(db.Model):
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+class Compra(db.Model):
+    __tablename__ = 'compras'
+    id = db.Column(db.Integer, primary_key=True)
+    fecha_compra = db.Column(db.DateTime, default=datetime.utcnow)
+    proveedor_id = db.Column(db.Integer, db.ForeignKey('proveedores.id'), nullable=False)
+    total = db.Column(db.Float, nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
+    entradas = db.relationship('Entrada', backref='compra', lazy=True, cascade='all, delete-orphan')
+
+
 class Entrada(db.Model):
+    __tablename__ = 'entradas'
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
     producto_id = db.Column(db.Integer)
@@ -94,26 +110,24 @@ class Entrada(db.Model):
     iva_porcentaje = db.Column(db.Float)
     valor_iva = db.Column(db.Float)
     importe_total = db.Column(db.Float)
-    proveedor_id = db.Column(db.Integer, db.ForeignKey('proveedor.id'))
-    compra_id = db.Column(db.Integer, db.ForeignKey('compra.id'), nullable=True)
-
-
-class Compra(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    fecha_compra = db.Column(db.DateTime, default=datetime.utcnow)
-    proveedor_id = db.Column(db.Integer, db.ForeignKey('proveedor.id'), nullable=False)
-    entradas = db.relationship('Entrada', backref='compra', lazy=True)
+    proveedor_id = db.Column(db.Integer, db.ForeignKey('proveedores.id'))
+    compra_id = db.Column(db.Integer, db.ForeignKey('compras.id'), nullable=True)
 
 
 class Venta(db.Model):
+    __tablename__ = 'ventas'
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
-    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=True)
+    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=True)
     total = db.Column(db.Float, nullable=False)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
+
+    cliente = db.relationship('Cliente')
+    usuario = db.relationship('Usuario')
 
 
 class Salida(db.Model):
+    __tablename__ = 'salidas'
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
     producto_id = db.Column(db.Integer)
@@ -124,11 +138,14 @@ class Salida(db.Model):
     iva_porcentaje = db.Column(db.Float)
     valor_iva = db.Column(db.Float)
     importe_total = db.Column(db.Float)
-    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=True)
+    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=True)
     eliminada = db.Column(db.Boolean, default=False)
+
+    cliente = db.relationship('Cliente')
 
 
 class Inventario(db.Model):
+    __tablename__ = 'inventario'
     id = db.Column(db.Integer, primary_key=True)
     producto_id = db.Column(db.Integer)
     producto_tipo = db.Column(db.String(20))
@@ -140,10 +157,13 @@ class Inventario(db.Model):
 
 
 class AjusteInventario(db.Model):
+    __tablename__ = 'ajustes_inventario'
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
     producto_id = db.Column(db.Integer)
     producto_tipo = db.Column(db.String(20))
     cantidad_ajuste = db.Column(db.Integer, nullable=False)
     razon = db.Column(db.Text)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
+
+    usuario = db.relationship('Usuario')
