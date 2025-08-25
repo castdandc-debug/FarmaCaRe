@@ -13,15 +13,13 @@
 <body>
     <div class="background-wrap"></div>
     <header class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
-                <img src="{{ url_for('static', filename='images/farmacare-logo.png') }}" alt="Logo FarmaCaRe" height="40">
+        <div class="container-fluid bg-dark p-2"> <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
+                <img src="{{ url_for('static', filename='images/LOGO.png') }}" alt="Logo FarmaCaRe" height="40">
             </a>
             <div class="navbar-text ms-auto d-flex align-items-center">
-                <a href="{{ url_for('main.profile') }}" class="btn btn-profile">
-                    Usuario: {{ current_user.nombre }} ({{ current_user.rol }})
+                <a href="{{ url_for('main.profile') }}" class="btn btn-profile text-white me-2"> Usuario: {{ current_user.nombre }} ({{ current_user.rol }})
                 </a>
-                <a href="{{ url_for('auth.logout') }}" class="btn btn-primary">Cerrar Sesión</a>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Cerrar Sesión</a>
             </div>
         </div>
     </header>
@@ -41,7 +39,7 @@
         
         {% if request.endpoint != 'main.dashboard' and request.endpoint != 'main.index' %}
             <div class="mb-3">
-                <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">← Volver al Dashboard</a>
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">← Volver al Administrador</a>
             </div>
         {% endif %}
         
