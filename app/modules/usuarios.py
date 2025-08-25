@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash
 from app.models import db, Usuario
@@ -13,11 +12,12 @@ def lista():
 @usuarios_bp.route('/usuarios/crear', methods=['GET', 'POST'])
 def crear():
     if request.method == 'POST':
-        nombre = request.form['nombre']  # ✅ Cambiado de 'username' a 'nombre'
+        nombre = request.form['nombre']
         rol = request.form['rol']
         if Usuario.query.filter_by(nombre=nombre).first():
             flash('Error: El usuario ya existe.')
             return redirect(url_for('usuarios.crear'))
+        hashed_password = generate_password_hash('123456')
         nuevo = Usuario(nombre=nombre, rol=rol)
         nuevo.set_password('123456')
         db.session.add(nuevo)
@@ -30,7 +30,7 @@ def crear():
 def editar(id):
     u = Usuario.query.get_or_404(id)
     if request.method == 'POST':
-        u.nombre = request.form['nombre']  # ✅ Cambiado de 'username' a 'nombre'
+        u.nombre = request.form['nombre']
         u.rol = request.form['rol']
         db.session.commit()
         flash('Usuario actualizado.')

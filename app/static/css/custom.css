@@ -1,18 +1,57 @@
-/* Iconos Bootstrap */
-.bi {
-    font-family: 'Bootstrap Icons';
+/* Colores principales */
+:root {
+    --primary-color: #007B8E; /* Verde oscuro */
+    --secondary-color: #f0f0f0; /* Gris claro */
+    --text-color: #333;
+    --border-color: #ccc;
 }
-.bi::before {
-    display: inline-block;
-    font-style: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-    vertical-align: -0.125em;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+
+/* Estilos globales */
+body {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-.bi-box::before { content: "\1F5C4"; }
-.bi-cart::before { content: "\1F6D2"; }
-.bi-bar-chart::before { content: "\1F4CA"; }
-.bi-file-earmark-pdf::before { content: "\1F4DC"; }
+
+.navbar {
+    background-color: var(--primary-color) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    color: white !important;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+}
+
+.btn-success {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-primary {
+    background-color: #0056b3 !important;
+    border-color: #0056b3 !important;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+
+.alert {
+    border-radius: 5px;
+}
+
+/* Fondo de la página principal */
+.container {
+    margin-top: 2rem;
+}
