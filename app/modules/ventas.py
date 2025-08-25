@@ -1,45 +1,45 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_required, current_user
-from app.models import db, Medicamento, Salida, Cliente, NoHay
+# -*- coding: utf-8 -*-
+from flask import Blueprint, render_template, request, flash, redirect, url_for
+from app.models import db, Venta, Cliente, Medicamento
 
-ventas_bp = Blueprint('ventas', __name__, template_folder='../templates')
+ventas_bp = Blueprint('ventas', __name__)
 
-@ventas_bp.route('/lista')
-@login_required
-def lista():
-    ventas = Salida.query.all()
-    return render_template('ventas.html', ventas=ventas)
-
-@ventas_bp.route('/crear', methods=['GET', 'POST'])
-@login_required
-def crear():
+@ventas_bp.route('/ventas/nueva', methods=['GET', 'POST'])
+def nueva():
+    clientes = Cliente.query.all()
+    medicamentos = Medicamento.query.all()
     if request.method == 'POST':
-        producto_id = request.form.get('producto_id')
-        cantidad = int(request.form.get('cantidad'))
-        cliente_id = request.form.get('cliente_id')
+        cliente_id = int(request.form['cliente_id']) if request.form['cliente_id'] else None
+        items = []
+        total = 0
+        for key, value in request.form.items():
+            if key.startswith('med_') and value:
+                med_id = int(key.replace('med_', ''))
+                cantidad = int(value)
+                med = Medicamento.query.get(med_id)
+                if med and med.stock >= cantidad:
+                    items.append((med, cantidad))
+                    total += med.precio_venta * cantidad
+                else:
+                    flash(f'Stock insuficiente para {med.nombre_comercial}')
+                    return redirect(url_for('ventas.nueva'))
 
-        producto = Medicamento.query.get(producto_id)
-        if not producto or producto.stock < cantidad:
-            flash('Stock insuficiente o producto no encontrado.', 'error')
-            return redirect(url_for('ventas.crear'))
-
-        salida = Salida(
-            producto_id=producto_id,
-            producto_tipo='Medicamento',
-            cantidad=cantidad,
-            importe_unitario=producto.precio_venta,
-            importe_antes_iva=producto.precio_venta * cantidad,
-            iva_porcentaje=producto.iva,
-            valor_iva=(producto.precio_venta * cantidad * producto.iva / 100),
-            importe_total=(producto.precio_venta * cantidad * (1 + producto.iva / 100)),
-            cliente_id=cliente_id if cliente_id else None  # Corrección aquí
-        )
-        db.session.add(salida)
-        producto.stock -= cantidad
+        # Crear venta
+        venta = Venta(cliente_id=cliente_id, total=total, usuario_id=1)
+        db.session.add(venta)
         db.session.commit()
-        flash('Venta registrada exitosamente.', 'success')
+
+        # Actualizar stock
+        for med, cantidad in items:
+            med.stock -= cantidad
+        db.session.commit()
+
+        flash('Venta realizada con éxito.')
         return redirect(url_for('ventas.lista'))
 
-    medicamentos = Medicamento.query.all()
-    clientes = Cliente.query.all()
-    return render_template('crear_venta.html', medicamentos=medicamentos, clientes=clientes)
+    return render_template('nueva_venta.html', clientes=clientes, medicamentos=medicamentos)
+
+@ventas_bp.route('/ventas')
+def lista():
+    ventas = Venta.query.all()
+    return render_template('ventas.html', ventas=ventas)
