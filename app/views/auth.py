@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user, login_required, current_user
-from app.models import db, Usuario
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import login_user, logout_user, login_required
+from app.models import Usuario
+from werkzeug.security import check_password_hash
 
 auth_bp = Blueprint('auth', __name__, template_folder='../templates')
 
@@ -21,4 +22,4 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.index'))
