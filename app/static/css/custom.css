@@ -42,8 +42,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .navbar-brand img {
-    height: 60px; /* Tamaño del logo de FarmaCaRe aumentado para ser más alto y largo */
-    width: auto; /* Mantener la proporción */
+    height: 60px;
+    width: 150px;
     filter: brightness(1.2) drop-shadow(0 0 5px rgba(0,0,0,0.2));
     transition: filter 0.3s ease-in-out;
 }
@@ -65,14 +65,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary {
-    background-color: var(--color-vibrant-green); /* Usamos el nuevo color verde */
-    border-color: var(--color-vibrant-green);
-    color: #fff; /* Texto blanco */
+    background-color: var(--color-primary); /* Color verde del logo */
+    border-color: var(--color-primary);
+    color: #fff; /* Asegura que el texto del botón sea blanco */
 }
 
 .btn-secondary:hover {
-    background-color: #2e8b46;
-    border-color: #2e8b46;
+    background-color: #1a4d48;
+    border-color: #1a4d48;
 }
 
 /* Estilo para el botón de perfil de usuario */
