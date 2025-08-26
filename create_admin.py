@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash
 app = create_app()
 
 with app.app_context():
-    # ✅ Crear todas las tablas si no existen
+    # ✅ Crear tablas si no existen
     db.create_all()
     print("Tablas creadas exitosamente.")
 
