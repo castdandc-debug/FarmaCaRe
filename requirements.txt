@@ -1,7 +1,8 @@
 Flask==3.1.2
 Flask-SQLAlchemy==3.1.1
 Flask-Login==0.6.3
-Flask-Bcrypt==1.0.1  # <-- ¡Añade esta línea!
+Flask-Bcrypt==1.0.1
+Flask-Migrate==4.0.5  # <-- ¡Añade esta línea!
 Werkzeug==3.1.3
 python-dotenv==1.1.1
 matplotlib==3.10.5
