@@ -29,7 +29,7 @@ def create_app():
 
     # Importar y registrar blueprints
     from .views.auth import auth_bp
-    from .routes.main import main_bp
+    from .routes.main import main
     from .modules.usuarios import usuarios_bp
     from .modules.medicamentos import medicamentos_bp
     from .modules.clientes import clientes_bp
@@ -41,7 +41,7 @@ def create_app():
     from .modules.inventario import inventario_bp
 
     app.register_blueprint(auth_bp)
-    app.register_blueprint(main_bp)
+    app.register_blueprint(main)
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(medicamentos_bp)
     app.register_blueprint(clientes_bp)
