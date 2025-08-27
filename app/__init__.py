@@ -28,8 +28,8 @@ def create_app():
         return Usuario.query.get(int(user_id))
 
     # Importar y registrar blueprints
-    from .modules.auth import auth_bp
-    from .modules.main import main_bp
+    from .views.auth import auth_bp
+    from .routes.main import main_bp
     from .modules.usuarios import usuarios_bp
     from .modules.medicamentos import medicamentos_bp
     from .modules.clientes import clientes_bp
