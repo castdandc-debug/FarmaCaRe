@@ -12,7 +12,7 @@ def lista():
 @usuarios_bp.route('/usuarios/crear', methods=['GET', 'POST'])
 def crear():
     if request.method == 'POST':
-        nombre = request.form['nombre']
+        nombre = request.form['username']
         rol = request.form['rol']
         if Usuario.query.filter_by(nombre=nombre).first():
             flash('Error: El usuario ya existe.')
