@@ -1,14 +1,11 @@
 # run.py
 import os
 from app import create_app
-from app.models import db, Usuario
-from flask_migrate import Migrate # Importa Flask-Migrate
+from app.extensions import db
+from app.models import Usuario
 
 # Crear e inicializar la aplicación Flask
 app = create_app()
-
-# Inicializa Flask-Migrate para el manejo de migraciones de la base de datos
-migrate = Migrate(app, db)
 
 if __name__ == '__main__':
     # Usar el contexto de la aplicación para interactuar con la base de datos
@@ -20,7 +17,7 @@ if __name__ == '__main__':
         if not Usuario.query.filter_by(nombre='admin').first():
             print("Creando usuario administrador...")
             admin = Usuario(nombre='admin', rol='Administrador')
-            admin.set_password('123456') # Considera cambiar esta contraseña por una más segura
+            admin.set_password('123456')  # Considera cambiar esta contraseña por una más segura
             db.session.add(admin)
             db.session.commit()
             print("✅ Usuario admin creado exitosamente.")

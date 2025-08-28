@@ -1,11 +1,7 @@
-# app/models.py
 from app.extensions import db
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-
-# Define la base de datos
-db = SQLAlchemy()
 
 # Modelo de Usuario
 class Usuario(db.Model, UserMixin):
@@ -31,8 +27,8 @@ class Cliente(db.Model):
     direccion = db.Column(db.String(200))
     telefono = db.Column(db.String(15))
     email = db.Column(db.String(100))
-    rfc = db.Column(db.String(13), nullable=True) # Campo RFC añadido
-    contacto = db.Column(db.String(150), nullable=True) # Campo contacto añadido
+    rfc = db.Column(db.String(13), nullable=True)
+    contacto = db.Column(db.String(150), nullable=True)
 
 # Modelo de Proveedor
 class Proveedor(db.Model):

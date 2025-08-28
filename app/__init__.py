@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from flask_bcrypt import Bcrypt
+from .extensions import db, login_manager, bcrypt, migrate
 import os
-
-db = SQLAlchemy()
-login_manager = LoginManager()
-bcrypt = Bcrypt()
 
 def create_app():
     app = Flask(__name__)
@@ -15,9 +9,11 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///farma.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    # Inicializar las extensiones aquí
     db.init_app(app)
     login_manager.init_app(app)
     bcrypt.init_app(app)
+    migrate.init_app(app, db)
     login_manager.login_view = 'auth.login'
     
     # Importar los modelos para que la app los reconozca
