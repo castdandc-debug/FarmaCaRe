@@ -1,9 +1,13 @@
 # app/__init__.py
 # -*- coding: utf-8 -*-
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask
 from .extensions import db, login_manager, bcrypt, migrate
 import os
 from sqlalchemy.exc import ProgrammingError
+from werkzeug.security import generate_password_hash
 
 def create_app():
     app = Flask(__name__)
@@ -19,16 +23,12 @@ def create_app():
     
     from .models import Usuario
 
-    # Aquí se crea un contexto de la aplicación para interactuar con la base de datos
     with app.app_context():
         try:
-            # Crea las tablas si no existen. Esto es redundante con flask db upgrade
-            # pero sirve como una medida de seguridad.
             db.create_all()
 
-            # Crea el usuario 'admin' si no existe
             if not Usuario.query.filter_by(nombre='admin').first():
-                admin_password_hash = bcrypt.generate_password_hash('admin').decode('utf-8')
+                admin_password_hash = generate_password_hash('admin')
                 admin_user = Usuario(
                     nombre='admin',
                     contraseña=admin_password_hash,
@@ -37,9 +37,7 @@ def create_app():
                 db.session.add(admin_user)
                 db.session.commit()
         except ProgrammingError as e:
-            # Maneja el caso en que la tabla aún no se ha creado
             app.logger.error("Error al acceder a la tabla de usuarios: %s", e)
-            # Reintenta el despliegue o la conexión
 
     @login_manager.user_loader
     def load_user(user_id):
