@@ -11,9 +11,9 @@ auth_bp = Blueprint('auth', __name__)
 def login():
     if current_user.is_authenticated:
         if current_user.rol == 'admin':
-            return redirect(url_for('main.admin_dashboard'))
+            return redirect(url_for('main.dashboard')) # <--- CAMBIO AQUÍ
         else:
-            return redirect(url_for('main.user_dashboard'))
+            return redirect(url_for('main.dashboard')) # <--- Y AQUÍ
 
     if request.method == 'POST':
         nombre_usuario = request.form['username']
@@ -23,9 +23,9 @@ def login():
         if usuario and check_password_hash(usuario.contraseña, contraseña):
             login_user(usuario)
             if usuario.rol == 'admin':
-                return redirect(url_for('main.admin_dashboard'))
+                return redirect(url_for('main.dashboard')) # <--- CAMBIO AQUÍ
             else:
-                return redirect(url_for('main.user_dashboard'))
+                return redirect(url_for('main.dashboard')) # <--- Y AQUÍ
         else:
             flash('Nombre de usuario o contraseña incorrectos.')
             return render_template('auth/login.html')
