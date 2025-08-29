@@ -1,3 +1,4 @@
+# app/__init__.py
 # -*- coding: utf-8 -*-
 from flask import Flask
 from .extensions import db, login_manager, bcrypt, migrate
@@ -50,3 +51,7 @@ def create_app():
     app.register_blueprint(inventario_bp)
 
     return app
+
+# Esta línea es la que necesita Gunicorn para encontrar tu app
+# Llama a la función y asigna el objeto de la aplicación a una variable llamada 'app'.
+app = create_app()
