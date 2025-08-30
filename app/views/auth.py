@@ -9,11 +9,9 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    # Si el usuario ya está autenticado, redirigir directamente al dashboard
     if current_user.is_authenticated:
-        if current_user.rol == 'admin':
-            return redirect(url_for('main.dashboard')) # <--- CAMBIO AQUÍ
-        else:
-            return redirect(url_for('main.dashboard')) # <--- Y AQUÍ
+        return redirect(url_for('main.dashboard'))
 
     if request.method == 'POST':
         nombre_usuario = request.form['username']
@@ -22,10 +20,7 @@ def login():
 
         if usuario and check_password_hash(usuario.contraseña, contraseña):
             login_user(usuario)
-            if usuario.rol == 'admin':
-                return redirect(url_for('main.dashboard')) # <--- CAMBIO AQUÍ
-            else:
-                return redirect(url_for('main.dashboard')) # <--- Y AQUÍ
+            return redirect(url_for('main.dashboard'))
         else:
             flash('Nombre de usuario o contraseña incorrectos.')
             return render_template('auth/login.html')
