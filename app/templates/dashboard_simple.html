@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - FarmaCaRe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h3>Bienvenido al Sistema FarmaCaRe</h3>
+                        <p>Usuario: {{ current_user.nombre }} | Rol: {{ current_user.rol }}</p>
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-light btn-sm">Cerrar Sesión</a>
+                    </div>
+                    <div class="card-body">
+                        <h4>Dashboard funcionando correctamente</h4>
+                        <p>El sistema está listo para usar.</p>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card bg-primary text-white mb-3">
+                                    <div class="card-body">
+                                        <h5>Medicamentos</h5>
+                                        <p>Gestionar inventario</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-info text-white mb-3">
+                                    <div class="card-body">
+                                        <h5>Ventas</h5>
+                                        <p>Nueva venta</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-warning text-white mb-3">
+                                    <div class="card-body">
+                                        <h5>Usuarios</h5>
+                                        <p>Gestionar usuarios</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

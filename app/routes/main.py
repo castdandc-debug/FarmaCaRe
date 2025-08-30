@@ -1,5 +1,4 @@
 # app/routes/main.py
-
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
 
@@ -10,8 +9,7 @@ def index():
     # Si el usuario ya está autenticado, lo enviamos directamente al dashboard.
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
-    # Si no lo está, lo dejamos en la página principal para que vea el contenido público
-    # o lo redirigimos al login si la página principal no tiene contenido.
+    # Si no lo está, lo redirigimos al login
     return redirect(url_for('auth.login'))
 
 @main.route('/dashboard')

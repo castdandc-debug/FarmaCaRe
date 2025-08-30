@@ -7,7 +7,6 @@ from flask import Flask
 from .extensions import db, login_manager, bcrypt, migrate
 import os
 from sqlalchemy.exc import ProgrammingError
-from werkzeug.security import generate_password_hash
 
 def create_app():
     app = Flask(__name__)
@@ -15,27 +14,32 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    # Inicializar extensiones
     db.init_app(app)
     login_manager.init_app(app)
     bcrypt.init_app(app)
     migrate.init_app(app, db)
     login_manager.login_view = 'auth.login'
     
+    # Importar modelos después de inicializar db
     from .models import Usuario
 
     with app.app_context():
         try:
+            # Crear todas las tablas de la base de datos si no existen
             db.create_all()
 
+            # Crear usuario admin si no existe
             if not Usuario.query.filter_by(nombre='admin').first():
-                admin_password_hash = generate_password_hash('admin')
-                admin_user = Usuario(
-                    nombre='admin',
-                    contraseña=admin_password_hash,
-                    rol='admin'
-                )
-                db.session.add(admin_user)
+                print("Creando usuario administrador...")
+                admin = Usuario(nombre='admin', rol='Administrador')
+                admin.set_password('admin')
+                db.session.add(admin)
                 db.session.commit()
+                print("✅ Usuario admin creado exitosamente.")
+            else:
+                print("👤 Usuario admin ya existe.")
+                
         except ProgrammingError as e:
             app.logger.error("Error al acceder a la tabla de usuarios: %s", e)
 
@@ -43,30 +47,31 @@ def create_app():
     def load_user(user_id):
         return Usuario.query.get(int(user_id))
 
-    # Importar y registrar blueprints
+    # Importar y registrar blueprints con las rutas correctas
     from .views.auth import auth_bp
     from .routes.main import main
-    from .modules.usuarios import usuarios_bp
-    from .modules.medicamentos import medicamentos_bp
-    from .modules.clientes import clientes_bp
-    from .modules.proveedores import proveedores_bp
-    from .modules.ventas import ventas_bp
-    from .modules.compras import compras_bp
-    from .modules.facturar import facturar_bp
+    from .modules.core.users.usuarios import usuarios_bp
+    from .modules.inventory.products.medicamentos import medicamentos_bp
+    from .modules.inventory.products.clientes import clientes_bp
+    from .modules.inventory.products.proveedores import proveedores_bp
+    from .modules.sales.ventas import ventas_bp
+    from .modules.sales.compras import compras_bp
+    from .modules.sales.facturar import facturar_bp
     from .modules.nohay import nohay_bp
-    from .modules.inventario import inventario_bp
+    from .modules.inventory.products.inventario import inventario_bp
 
+    # Registrar blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(main)
-    app.register_blueprint(usuarios_bp)
-    app.register_blueprint(medicamentos_bp)
-    app.register_blueprint(clientes_bp)
-    app.register_blueprint(proveedores_bp)
-    app.register_blueprint(ventas_bp)
-    app.register_blueprint(compras_bp)
-    app.register_blueprint(facturar_bp)
-    app.register_blueprint(nohay_bp)
-    app.register_blueprint(inventario_bp)
+    app.register_blueprint(usuarios_bp, url_prefix='/usuarios')
+    app.register_blueprint(medicamentos_bp, url_prefix='/medicamentos')
+    app.register_blueprint(clientes_bp, url_prefix='/clientes')
+    app.register_blueprint(proveedores_bp, url_prefix='/proveedores')
+    app.register_blueprint(ventas_bp, url_prefix='/ventas')
+    app.register_blueprint(compras_bp, url_prefix='/compras')
+    app.register_blueprint(facturar_bp, url_prefix='/facturar')
+    app.register_blueprint(nohay_bp, url_prefix='/nohay')
+    app.register_blueprint(inventario_bp, url_prefix='/inventario')
 
     return app
 

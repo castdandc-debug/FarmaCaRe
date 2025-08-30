@@ -7,39 +7,107 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # Modelo de Usuario
 class Usuario(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    rol = db.Column(db.String(20), nullable=False, default='empleado')
+    nombre = db.Column(db.String(100), nullable=False, unique=True)
+    contraseña = db.Column(db.String(128), nullable=False)
+    rol = db.Column(db.String(20), nullable=False, default='Caja')
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_modificacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.contraseña = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.contraseña, password)
 
     def __repr__(self):
-        return f'<Usuario {self.username}>'
+        return f'<Usuario {self.nombre}>'
 
 # Modelo de Cliente
 class Cliente(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(150), nullable=False)
-    direccion = db.Column(db.String(200))
-    telefono = db.Column(db.String(15))
-    email = db.Column(db.String(100))
     rfc = db.Column(db.String(13), nullable=True)
+    direccion = db.Column(db.String(200), nullable=True)
+    telefono = db.Column(db.String(15), nullable=True)
+    email = db.Column(db.String(100), nullable=True)
     contacto = db.Column(db.String(150), nullable=True)
+    telefono_contacto = db.Column(db.String(15), nullable=True)
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_modificacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Cliente {self.nombre}>'
 
 # Modelo de Proveedor
 class Proveedor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    contacto = db.Column(db.String(100))
-    telefono = db.Column(db.String(15))
-    email = db.Column(db.String(100))
+    nombre = db.Column(db.String(150), nullable=False)
+    rfc = db.Column(db.String(13), nullable=True)
+    direccion = db.Column(db.String(200), nullable=True)
+    telefono = db.Column(db.String(15), nullable=True)
+    email = db.Column(db.String(100), nullable=True)
+    contacto = db.Column(db.String(150), nullable=True)
+    telefono_contacto = db.Column(db.String(15), nullable=True)
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_modificacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-# Modelo de Producto (Medicamento)
+    def __repr__(self):
+        return f'<Proveedor {self.nombre}>'
+
+# Modelo de Medicamento
+class Medicamento(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    codigo_barras = db.Column(db.String(50), unique=True, nullable=False)
+    nombre_comercial = db.Column(db.String(150), nullable=False)
+    nombre_generico = db.Column(db.String(150), nullable=False)
+    laboratorio = db.Column(db.String(100), nullable=False)
+    presentacion = db.Column(db.String(100), nullable=False)
+    grupo = db.Column(db.String(20), nullable=False)  # I, II, III, IV, V, IV-Antibiótico
+    iva = db.Column(db.Float, default=0.0)  # Porcentaje de IVA
+    precio_venta = db.Column(db.Float, nullable=False)
+    stock = db.Column(db.Integer, default=0)
+    punto_reorden = db.Column(db.Integer, default=10)
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_modificacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Medicamento {self.nombre_comercial}>'
+
+# Modelo de No Hay
+class NoHay(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(150), nullable=False)
+    tipo = db.Column(db.String(50), nullable=False)  # 'Poco inventario', 'No tiene el proveedor', 'Descontinuado', 'No existe'
+    descripcion = db.Column(db.Text, nullable=True)
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_modificacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<NoHay {self.nombre}>'
+
+# Modelo de Salida (para compatibilidad con facturar.py)
+class Salida(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    producto_id = db.Column(db.Integer, nullable=False)
+    producto_tipo = db.Column(db.String(20), nullable=False)  # 'Medicamento' o 'DispositivoMedico'
+    cantidad = db.Column(db.Integer, nullable=False)
+    importe_unitario = db.Column(db.Float, nullable=False)
+    importe_antes_iva = db.Column(db.Float, nullable=False)
+    iva_porcentaje = db.Column(db.Float, default=0.0)
+    valor_iva = db.Column(db.Float, default=0.0)
+    importe_total = db.Column(db.Float, nullable=False)
+    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    eliminada = db.Column(db.Boolean, default=False)
+    
+    cliente = db.relationship('Cliente', backref='salidas')
+    usuario = db.relationship('Usuario', backref='salidas')
+
+    def __repr__(self):
+        return f'<Salida {self.fecha}>'
+
+# Modelos heredados para compatibilidad
 class Producto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
@@ -47,34 +115,26 @@ class Producto(db.Model):
     stock = db.Column(db.Integer, default=0)
     precio = db.Column(db.Float, nullable=False)
     proveedor_id = db.Column(db.Integer, db.ForeignKey('proveedor.id'))
-    proveedor = db.relationship('Proveedor', backref='productos')
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    proveedor = db.relationship('Proveedor', backref='productos_genericos')
 
-# Modelo de Venta
 class Venta(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
     cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'))
-    cliente = db.relationship('Cliente', backref='ventas')
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-    usuario = db.relationship('Usuario', backref='ventas')
+    total = db.Column(db.Float, default=0.0)
+    
+    cliente = db.relationship('Cliente', backref='ventas_legacy')
+    usuario = db.relationship('Usuario', backref='ventas_legacy')
 
-# Tabla de relación muchos a muchos para ventas y productos
-ventas_productos = db.Table('ventas_productos',
-    db.Column('venta_id', db.Integer, db.ForeignKey('venta.id')),
-    db.Column('producto_id', db.Integer, db.ForeignKey('producto.id'))
-)
-
-# Modelo de Compra
 class Compra(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
     proveedor_id = db.Column(db.Integer, db.ForeignKey('proveedor.id'))
-    proveedor = db.relationship('Proveedor', backref='compras')
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-    usuario = db.relationship('Usuario', backref='compras')
-
-# Tabla de relación muchos a muchos para compras y productos
-compras_productos = db.Table('compras_productos',
-    db.Column('compra_id', db.Integer, db.ForeignKey('compra.id')),
-    db.Column('producto_id', db.Integer, db.ForeignKey('producto.id'))
-)
+    total = db.Column(db.Float, default=0.0)
+    
+    proveedor = db.relationship('Proveedor', backref='compras_legacy')
+    usuario = db.relationship('Usuario', backref='compras_legacy')
