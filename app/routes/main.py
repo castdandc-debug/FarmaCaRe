@@ -7,22 +7,23 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    # Si el usuario ya está autenticado, redirigir al dashboard
+    # Si el usuario ya está autenticado, lo enviamos directamente al dashboard.
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
-    # Si no lo está, redirigir a la página de login
+    # Si no lo está, lo dejamos en la página principal para que vea el contenido público
+    # o lo redirigimos al login si la página principal no tiene contenido.
     return redirect(url_for('auth.login'))
 
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    # Verifica el rol del usuario y renderiza la plantilla correcta
+    # Lógica para renderizar el dashboard según el rol del usuario.
     if current_user.rol == 'Administrador':
         return render_template('dashboard_admin.html')
     elif current_user.rol == 'Caja':
         return render_template('dashboard_caja.html')
     else:
-        # Si el rol es desconocido, redirige al login con un mensaje de error.
+        # En caso de que el rol no sea reconocido, lo redirigimos al login.
         return redirect(url_for('auth.login'))
 
 @main.route('/profile')
