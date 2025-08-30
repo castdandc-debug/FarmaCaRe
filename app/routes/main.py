@@ -1,4 +1,5 @@
 # app/routes/main.py
+
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
 
@@ -6,9 +7,11 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    # Redirige siempre al dashboard. Flask-Login manejará la redirección al login
-    # si el usuario no está autenticado.
-    return redirect(url_for('main.dashboard'))
+    # Si el usuario ya está autenticado, redirigir al dashboard
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+    # Si no lo está, redirigir a la página de login
+    return redirect(url_for('auth.login'))
 
 @main.route('/dashboard')
 @login_required
@@ -19,8 +22,7 @@ def dashboard():
     elif current_user.rol == 'Caja':
         return render_template('dashboard_caja.html')
     else:
-        # Si el rol es desconocido, puedes mostrar un error o simplemente redirigir a un lugar seguro.
-        # Por ejemplo, una página de error o nuevamente el login con un mensaje.
+        # Si el rol es desconocido, redirige al login con un mensaje de error.
         return redirect(url_for('auth.login'))
 
 @main.route('/profile')
