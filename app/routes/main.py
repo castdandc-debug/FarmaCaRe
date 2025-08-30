@@ -6,22 +6,21 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    # Si el usuario no está autenticado, redirigir a la página de inicio de sesión.
-    if not current_user.is_authenticated:
-        return redirect(url_for('auth.login'))
-    
-    # Redirigir al dashboard según el rol del usuario
+    # Redirige siempre al dashboard. Flask-Login manejará la redirección al login
+    # si el usuario no está autenticado.
     return redirect(url_for('main.dashboard'))
 
 @main.route('/dashboard')
 @login_required
 def dashboard():
+    # Verifica el rol del usuario y renderiza la plantilla correcta
     if current_user.rol == 'Administrador':
         return render_template('dashboard_admin.html')
     elif current_user.rol == 'Caja':
         return render_template('dashboard_caja.html')
     else:
-        # En caso de un rol no reconocido, redirigir al login.
+        # Si el rol es desconocido, puedes mostrar un error o simplemente redirigir a un lugar seguro.
+        # Por ejemplo, una página de error o nuevamente el login con un mensaje.
         return redirect(url_for('auth.login'))
 
 @main.route('/profile')
