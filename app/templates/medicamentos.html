@@ -49,7 +49,10 @@
             <td>${{ med.precio_venta }}</td>
             <td>
                 <a href="{{ url_for('medicamentos.editar', id=med.id) }}" class="btn btn-sm btn-warning">Editar</a>
-                <a href="{{ url_for('medicamentos.eliminar', id=med.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas eliminar este medicamento?')">Eliminar</a>
+                <!-- Eliminar como formulario POST seguro -->
+                <form method="POST" action="{{ url_for('medicamentos.eliminar', id=med.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas eliminar este medicamento?')">Eliminar</button>
+                </form>
             </td>
         </tr>
         {% endfor %}

@@ -1,14 +1,15 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app.models import db, Salida, Cliente
+from app.extensions import db
+from app.models import Salida, Cliente
 
-facturar_bp = Blueprint('facturar', __name__, template_folder='../templates')
+bp = Blueprint('facturar', __name__, url_prefix='/facturar', template_folder='../templates')
 
-@facturar_bp.route('/facturar/<int:nota_id>', methods=['GET', 'POST'])
+@bp.route('/<int:nota_id>', methods=['GET', 'POST'])
 @login_required
 def facturar(nota_id):
     nota = Salida.query.get_or_404(nota_id)
-    if nota.eliminada:
+    if getattr(nota, 'eliminada', False):
         flash('Nota eliminada o no existe.', 'error')
         return redirect(url_for('ventas.lista'))
     if request.method == 'POST':

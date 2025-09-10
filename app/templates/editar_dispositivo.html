@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Editar Dispositivo Médico{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Editar Dispositivo Médico</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label>Código de Barras</label>
+            <div class="input-group">
+                <input type="text" name="codigo_barras" id="codigo_barras" class="form-control" value="{{ disp.codigo_barras }}" required>
+                <button type="button" class="btn btn-outline-secondary" id="btn-escanear-codigo">Escanear</button>
+            </div>
+            <div id="reader" style="width:300px; display:none; margin-top:10px;"></div>
+        </div>
+        <div class="mb-3">
+            <label>Nombre Comercial</label>
+            <input type="text" name="nombre_comercial" class="form-control" value="{{ disp.nombre_comercial }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Nombre Común</label>
+            <input type="text" name="nombre_comun" class="form-control" value="{{ disp.nombre_comun }}">
+        </div>
+        <div class="mb-3">
+            <label>Laboratorio</label>
+            <input type="text" name="laboratorio" class="form-control" value="{{ disp.laboratorio }}">
+        </div>
+        <div class="mb-3">
+            <label>Presentación</label>
+            <input type="text" name="presentacion" class="form-control" value="{{ disp.presentacion }}" required>
+        </div>
+        <div class="mb-3">
+            <label>IVA</label>
+            <input type="number" name="iva" step="0.01" class="form-control" value="{{ disp.iva }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Precio de Venta</label>
+            <input type="number" name="precio_venta" step="0.01" class="form-control" value="{{ disp.precio_venta }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href="{{ url_for('dispositivos.lista') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+document.getElementById('btn-escanear-codigo').addEventListener('click', function() {
+    var reader = document.getElementById('reader');
+    reader.style.display = "block";
+    let html5QrcodeScanner = new Html5Qrcode("reader");
+    html5QrcodeScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText, decodedResult) => {
+            document.getElementById('codigo_barras').value = decodedText;
+            html5QrcodeScanner.stop().then(_ => {
+                reader.style.display = "none";
+            }).catch(_ => {
+                reader.style.display = "none";
+            });
+        }
+    ).catch(err => {
+        alert("No se pudo acceder a la cámara: " + err);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Cliente - FarmaCaRe{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Editar Cliente</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="nombre">Nombre / Razón Social</label>
+            <input type="text" name="nombre" id="nombre" class="form-control" value="{{ cliente.nombre }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="rfc">RFC</label>
+            <input type="text" name="rfc" id="rfc" class="form-control" value="{{ cliente.rfc }}">
+        </div>
+        <div class="mb-3">
+            <label for="contacto">Contacto</label>
+            <input type="text" name="contacto" id="contacto" class="form-control" value="{{ cliente.contacto }}">
+        </div>
+        <div class="mb-3">
+            <label for="telefono">Teléfono</label>
+            <input type="text" name="telefono" id="telefono" class="form-control" value="{{ cliente.telefono }}">
+        </div>
+        <div class="mb-3">
+            <label for="direccion">Dirección</label>
+            <input type="text" name="direccion" id="direccion" class="form-control" value="{{ cliente.direccion }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href="{{ url_for('clientes.lista') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

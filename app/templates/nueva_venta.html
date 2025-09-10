@@ -4,58 +4,70 @@
 
 {% block content %}
 <div class="container mt-4">
+    <!-- Solo un botón volver y un botón listado, ya no repetido -->
+    <div class="mb-3 d-flex gap-2">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-success">&larr; Volver al Administrador</a>
+        <a href="{{ url_for('ventas.listado') }}" class="btn btn-primary"><i class="bi bi-list"></i> Listado de Ventas</a>
+    </div>
     <h2>Nueva Venta</h2>
     <form method="POST">
         <div class="mb-3">
             <label for="cliente_id">Cliente (Opcional)</label>
-            <select name="cliente_id" id="cliente_id" class="form-control">
+            <select class="form-control" name="cliente_id" id="cliente_id">
                 <option value="">-- Sin cliente --</option>
                 {% for c in clientes %}
                 <option value="{{ c.id }}">{{ c.nombre }}</option>
                 {% endfor %}
             </select>
         </div>
-
-        <div class="mb-3">
-            <label for="medicamento">Buscar Medicamento</label>
-            <select name="medicamento" id="medicamento" class="form-control">
-                <option value="">-- Seleccionar medicamento --</option>
-                {% for m in medicamentos %}
-                <option value="{{ m.id }}">{{ m.nombre_comercial }} ({{ m.codigo_barras }})</option>
-                {% endfor %}
-            </select>
+        <div class="mb-3 d-flex align-items-end">
+            <div style="flex: 1;">
+                <label for="medicamento">Buscar Medicamento</label>
+                <select class="form-control" name="medicamento" id="medicamento">
+                    <option value="">-- Seleccionar medicamento --</option>
+                    {% for m in medicamentos %}
+                    <option value="{{ m.id }}">{{ m.nombre_comercial }} ({{ m.codigo }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Botón para abrir el modal de "No hay" -->
+            <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#noHayModal">
+                No hay
+            </button>
         </div>
-
         <div class="mb-3">
             <label for="cantidad">Cantidad</label>
-            <input type="number" name="cantidad" id="cantidad" class="form-control" min="1">
+            <input type="number" class="form-control" name="cantidad" id="cantidad">
         </div>
-
         <button type="submit" class="btn btn-success">Agregar al carrito</button>
     </form>
+</div>
 
-    <div class="mt-4">
-        <h3>Carrito de Compra</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Medicamento</th>
-                    <th>Cantidad</th>
-                    <th>Precio Unitario</th>
-                    <th>Subtotal</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Aquí iría el carrito dinámico -->
-            </tbody>
-        </table>
-    </div>
-
-    <div class="mt-4">
-        <h3>Total</h3>
-        <p><strong>Total: $0.00</strong></p>
-        <button type="button" class="btn btn-primary">Imprimir Ticket</button>
-    </div>
+<!-- Modal para reportar "No hay" -->
+<div class="modal fade" id="noHayModal" tabindex="-1" aria-labelledby="noHayModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="{{ url_for('ventas.nueva') }}">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="noHayModalLabel">Reportar producto "No hay"</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombre_no_hay" class="form-label">Nombre del producto</label>
+            <input type="text" class="form-control" id="nombre_no_hay" name="nombre" required>
+          </div>
+          <div class="mb-3">
+            <label for="motivo_no_hay" class="form-label">Motivo / Observación</label>
+            <input type="text" class="form-control" id="motivo_no_hay" name="tipo" placeholder="Ejemplo: no existe, agotado, etc.">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input type="hidden" name="no_hay_submit" value="1">
+          <button type="submit" class="btn btn-danger">Reportar</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

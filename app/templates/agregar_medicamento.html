@@ -9,7 +9,11 @@
         <div class="col-md-6">
             <div class="mb-3">
                 <label>Código de Barras</label>
-                <input type="text" name="codigo_barras" class="form-control" required>
+                <div class="input-group">
+                    <input type="text" name="codigo_barras" id="codigo_barras" class="form-control" required>
+                    <button type="button" class="btn btn-outline-secondary" id="btn-escanear-codigo">Escanear</button>
+                </div>
+                <div id="reader" style="width:300px; display:none; margin-top:10px;"></div>
             </div>
             <div class="mb-3">
                 <label>Nombre Comercial</label>
@@ -53,4 +57,26 @@
     <button type="submit" class="btn btn-primary">Guardar</button>
     <a href="{{ url_for('medicamentos.lista') }}" class="btn btn-secondary">Cancelar</a>
 </form>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+document.getElementById('btn-escanear-codigo').addEventListener('click', function() {
+    var reader = document.getElementById('reader');
+    reader.style.display = "block";
+    let html5QrcodeScanner = new Html5Qrcode("reader");
+    html5QrcodeScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText, decodedResult) => {
+            document.getElementById('codigo_barras').value = decodedText;
+            html5QrcodeScanner.stop().then(_ => {
+                reader.style.display = "none";
+            }).catch(_ => {
+                reader.style.display = "none";
+            });
+        }
+    ).catch(err => {
+        alert("No se pudo acceder a la cámara: " + err);
+    });
+});
+</script>
 {% endblock %}

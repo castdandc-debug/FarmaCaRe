@@ -9,7 +9,11 @@
         <div class="col-md-6">
             <div class="mb-3">
                 <label>Código de Barras</label>
-                <input type="text" name="codigo_barras" class="form-control" value="{{ med.codigo_barras }}" required>
+                <div class="input-group">
+                    <input type="text" name="codigo_barras" id="codigo_barras" class="form-control" value="{{ med.codigo_barras }}" required>
+                    <button type="button" class="btn btn-outline-secondary" id="btn-escanear-codigo">Escanear</button>
+                </div>
+                <div id="reader" style="width:300px; display:none; margin-top:10px;"></div>
             </div>
             <div class="mb-3">
                 <label>Nombre Comercial</label>
@@ -17,7 +21,7 @@
             </div>
             <div class="mb-3">
                 <label>Nombre Genérico</label>
-                <input type="text" name="nombre_generico" class="form-control" value="{{ med.nombre_generico or '' }}">
+                <input type="text" name="nombre_generico" class="form-control" value="{{ med.nombre_generico }}">
             </div>
             <div class="mb-3">
                 <label>Laboratorio</label>
@@ -27,17 +31,17 @@
         <div class="col-md-6">
             <div class="mb-3">
                 <label>Presentación</label>
-                <input type="text" name="presentacion" class="form-control" value="{{ med.presentacion or '' }}" required>
+                <input type="text" name="presentacion" class="form-control" value="{{ med.presentacion }}" required>
             </div>
             <div class="mb-3">
                 <label>Grupo</label>
                 <select name="grupo" class="form-control" required>
-                    <option value="I" {% if med.grupo == "I" %}selected{% endif %}>Grupo I</option>
-                    <option value="II" {% if med.grupo == "II" %}selected{% endif %}>Grupo II</option>
-                    <option value="III" {% if med.grupo == "III" %}selected{% endif %}>Grupo III</option>
-                    <option value="IV" {% if med.grupo == "IV" %}selected{% endif %}>Grupo IV</option>
-                    <option value="V" {% if med.grupo == "V" %}selected{% endif %}>Grupo V</option>
-                    <option value="IV-Antibiótico" {% if med.grupo == "IV-Antibiótico" %}selected{% endif %}>IV-Antibiótico</option>
+                    <option value="I" {% if med.grupo == 'I' %}selected{% endif %}>Grupo I</option>
+                    <option value="II" {% if med.grupo == 'II' %}selected{% endif %}>Grupo II</option>
+                    <option value="III" {% if med.grupo == 'III' %}selected{% endif %}>Grupo III</option>
+                    <option value="IV" {% if med.grupo == 'IV' %}selected{% endif %}>Grupo IV</option>
+                    <option value="V" {% if med.grupo == 'V' %}selected{% endif %}>Grupo V</option>
+                    <option value="IV-Antibiótico" {% if med.grupo == 'IV-Antibiótico' %}selected{% endif %}>IV-Antibiótico</option>
                 </select>
             </div>
             <div class="mb-3">
@@ -53,4 +57,26 @@
     <button type="submit" class="btn btn-primary">Actualizar</button>
     <a href="{{ url_for('medicamentos.lista') }}" class="btn btn-secondary">Cancelar</a>
 </form>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+document.getElementById('btn-escanear-codigo').addEventListener('click', function() {
+    var reader = document.getElementById('reader');
+    reader.style.display = "block";
+    let html5QrcodeScanner = new Html5Qrcode("reader");
+    html5QrcodeScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText, decodedResult) => {
+            document.getElementById('codigo_barras').value = decodedText;
+            html5QrcodeScanner.stop().then(_ => {
+                reader.style.display = "none";
+            }).catch(_ => {
+                reader.style.display = "none";
+            });
+        }
+    ).catch(err => {
+        alert("No se pudo acceder a la cámara: " + err);
+    });
+});
+</script>
 {% endblock %}

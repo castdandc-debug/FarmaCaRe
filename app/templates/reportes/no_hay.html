@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Productos Agotados - FarmaCaRe{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Repoortes e inventario: No Hay</h2>
+
+    <div class="mb-3 d-flex flex-wrap gap-2">
+        <a href="{{ url_for('informe.informe_general') }}" class="btn btn-outline-dark">Informe General</a>
+        <a href="{{ url_for('informe.cortes_caja') }}" class="btn btn-outline-secondary">Cortes de Caja</a>
+        <a href="{{ url_for('informe.ajustes_inventario') }}" class="btn btn-outline-warning">Ajustes de Inventario</a>
+        <a href="{{ url_for('informe.kardex') }}" class="btn btn-outline-primary">Kardex</a>
+        <a href="{{ url_for('inventario.lista') }}" class="btn btn-outline-success">Inventario</a>
+    </div>
+
+    <!-- Filtro para incompletos -->
+    <form method="get" class="mb-3">
+        <div class="input-group">
+            <span class="input-group-text">Nombre del producto</span>
+            <input type="text" class="form-control" disabled>
+            <span class="input-group-text">Tipo</span>
+            <input type="text" class="form-control" disabled>
+            <span class="input-group-text">Descripción</span>
+            <input type="text" class="form-control" disabled>
+            <button class="btn btn-outline-secondary" type="submit" name="incompletos" value="{{ 1 if not filtrar_incompletos else 0 }}">
+                {% if filtrar_incompletos %}Mostrar Todos{% else %}Filtrar Incompletos{% endif %}
+            </button>
+        </div>
+    </form>
+
+    <!-- Alta nueva -->
+    <form method="post" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="nombre" class="form-control" placeholder="Nombre del producto" required>
+            <input type="text" name="tipo" class="form-control" placeholder="Tipo">
+            <input type="text" name="descripcion" class="form-control" placeholder="Descripción">
+            <button class="btn btn-primary" type="submit">Agregar</button>
+        </div>
+    </form>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Editar</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for producto in productos_no_hay %}
+            <tr id="row-{{ producto.id }}">
+                <td>{{ producto.nombre }}</td>
+                <td id="tipo-{{ producto.id }}">{{ producto.tipo if producto.tipo else '---' }}</td>
+                <td id="descripcion-{{ producto.id }}">{{ producto.descripcion if producto.descripcion else '---' }}</td>
+                <td>{{ producto.fecha_creacion.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ producto.usuario.nombre }}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-info" onclick="mostrarEditar({{ producto.id }}, '{{ producto.tipo|escape }}', '{{ producto.descripcion|escape }}')">Editar</button>
+                </td>
+            </tr>
+            <!-- Formulario de edición inline, oculto por defecto -->
+            <tr id="edit-row-{{ producto.id }}" style="display:none;">
+                <form method="post">
+                    <td colspan="6">
+                        <input type="hidden" name="edit_id" value="{{ producto.id }}">
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" value="{{ producto.nombre }}" disabled>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="edit_tipo" class="form-control" value="{{ producto.tipo }}">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="edit_descripcion" class="form-control" value="{{ producto.descripcion }}">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-success" type="submit">Guardar</button>
+                                <button type="button" class="btn btn-secondary" onclick="ocultarEditar({{ producto.id }})">Cancelar</button>
+                            </div>
+                        </div>
+                    </td>
+                </form>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+    function mostrarEditar(id, tipo, descripcion) {
+        document.getElementById('row-' + id).style.display = 'none';
+        document.getElementById('edit-row-' + id).style.display = '';
+    }
+    function ocultarEditar(id) {
+        document.getElementById('row-' + id).style.display = '';
+        document.getElementById('edit-row-' + id).style.display = 'none';
+    }
+    </script>
+</div>
+{% endblock %}

@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% block title %}Cortes de Caja - FarmaCaRe{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Reportes e Inventario: Cortes de Caja</h2>
+    <!-- Botones de navegación a submódulos de reportes -->
+    <div class="mb-3 d-flex flex-wrap gap-2">
+        <a href="{{ url_for('informe.informe_general') }}" class="btn btn-outline-dark">Informe General</a>
+        <a href="{{ url_for('inventario.lista') }}" class="btn btn-outline-success">Inventario</a>
+        <a href="{{ url_for('informe.ajustes_inventario') }}" class="btn btn-outline-warning">Ajustes de Inventario</a>
+        <a href="{{ url_for('informe.kardex') }}" class="btn btn-outline-primary">Kardex</a>
+        <a href="{{ url_for('informe.no_hay') }}" class="btn btn-outline-danger">No Hay</a>
+    </div>
+    <p>
+        Arqueo y cierre de caja (ingresa las divisas en pesos mexicanos y monedas/billetes. El sistema suma el monto final para el arqueo).
+    </p>
+    <form id="arqueo-form" class="mb-4" method="post" action="{{ url_for('informe.guardar_cierre') }}">
+        <fieldset class="border p-3 mb-3">
+            <legend class="w-auto">Billetes</legend>
+            <div class="row g-2">
+                {% for b in [20, 50, 100, 200, 500, 1000] %}
+                <div class="col">
+                    <label>${{ b }}</label>
+                    <input type="number" min="0" name="billete_{{ b }}" id="billete_{{ b }}" class="form-control divisas" value="0" step="1">
+                </div>
+                {% endfor %}
+            </div>
+        </fieldset>
+        <fieldset class="border p-3 mb-3">
+            <legend class="w-auto">Monedas</legend>
+            <div class="row g-2">
+                <div class="col">
+                    <label>$0.10</label>
+                    <input type="number" min="0" name="moneda_010" id="moneda_010" class="form-control divisas" value="0" step="1">
+                </div>
+                <div class="col">
+                    <label>$0.50</label>
+                    <input type="number" min="0" name="moneda_050" id="moneda_050" class="form-control divisas" value="0" step="1">
+                </div>
+                <div class="col">
+                    <label>$1.00</label>
+                    <input type="number" min="0" name="moneda_1" id="moneda_1" class="form-control divisas" value="0" step="1">
+                </div>
+                <div class="col">
+                    <label>$2.00</label>
+                    <input type="number" min="0" name="moneda_2" id="moneda_2" class="form-control divisas" value="0" step="1">
+                </div>
+                <div class="col">
+                    <label>$5.00</label>
+                    <input type="number" min="0" name="moneda_5" id="moneda_5" class="form-control divisas" value="0" step="1">
+                </div>
+                <div class="col">
+                    <label>$10.00</label>
+                    <input type="number" min="0" name="moneda_10" id="moneda_10" class="form-control divisas" value="0" step="1">
+                </div>
+                <div class="col">
+                    <label>$20.00</label>
+                    <input type="number" min="0" name="moneda_20" id="moneda_20" class="form-control divisas" value="0" step="1">
+                </div>
+            </div>
+        </fieldset>
+        <div class="row g-2 mb-2">
+            <div class="col-md-2">
+                <label>Total Efectivo</label>
+                <input type="number" name="total_efectivo" id="total_efectivo" class="form-control" value="0" readonly>
+            </div>
+            <div class="col-md-2">
+                <label>Tarjeta</label>
+                <input type="number" name="tarjeta" id="tarjeta" class="form-control divisas" value="0" min="0" step="0.01">
+            </div>
+            <div class="col-md-2">
+                <label>Transferencia</label>
+                <input type="number" name="transferencia" id="transferencia" class="form-control divisas" value="0" min="0" step="0.01">
+            </div>
+            <div class="col-md-2">
+                <label>Vales</label>
+                <input type="number" name="vales" id="vales" class="form-control divisas" value="0" min="0" step="0.01">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <span class="fw-bold">Total arqueo: $<span id="total_arqueo">0.00</span></span>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <label>Venta registrada en sistema:</label>
+                <input type="number" name="total_ventas_usuario" id="total_ventas_usuario" class="form-control" value="{{ total_ventas_usuario or 0 }}" min="0" step="0.01" readonly>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <span class="fw-bold text-danger">Faltante: $<span id="faltante_arqueo">0.00</span></span>
+                <input type="hidden" name="faltante" id="faltante_hidden" value="0">
+            </div>
+            <div class="col-md-4 d-flex align-items-end justify-content-end gap-2">
+                <button type="submit" class="btn btn-primary">Guardar Corte de Caja</button>
+                <button type="button" class="btn btn-success" onclick="imprimirPDF()">Imprimir Nota PDF</button>
+            </div>
+        </div>
+        <input type="hidden" name="corte_entregado" id="corte_entregado_hidden" value="0">
+    </form>
+    <hr>
+    {% if current_user.rol == "Administrador" %}
+    <h4 class="mt-4">Historial de Cierres de Caja</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Total Ingresos</th>
+                <th>Total Egresos</th>
+                <th>Caja Final</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for corte in cortes %}
+            <tr>
+                <td>{{ corte.fecha.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ corte.usuario.nombre }}</td>
+                <td>${{ '%.2f'|format(corte.corte_entregado) }}</td>
+                <td>${{ '%.2f'|format(corte.faltante) }}</td>
+                <td>${{ '%.2f'|format((corte.corte_entregado or 0) - (corte.faltante or 0)) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    // Helper para convertir el valor a número, quitando ceros a la izquierda
+    function parseDivisa(id) {
+        let el = document.getElementById(id);
+        if (!el) return 0;
+        let val = el.value;
+        if (!val) return 0;
+        val = val.replace(/^0+/, '');
+        return Number(val) || 0;
+    }
+
+    function calcularEfectivo() {
+        let efectivo = 0;
+        efectivo += parseDivisa('billete_20') * 20;
+        efectivo += parseDivisa('billete_50') * 50;
+        efectivo += parseDivisa('billete_100') * 100;
+        efectivo += parseDivisa('billete_200') * 200;
+        efectivo += parseDivisa('billete_500') * 500;
+        efectivo += parseDivisa('billete_1000') * 1000;
+        efectivo += parseDivisa('moneda_010') * 0.10;
+        efectivo += parseDivisa('moneda_050') * 0.50;
+        efectivo += parseDivisa('moneda_1') * 1.00;
+        efectivo += parseDivisa('moneda_2') * 2.00;
+        efectivo += parseDivisa('moneda_5') * 5.00;
+        efectivo += parseDivisa('moneda_10') * 10.00;
+        efectivo += parseDivisa('moneda_20') * 20.00;
+        document.getElementById('total_efectivo').value = efectivo.toFixed(2);
+        return efectivo;
+    }
+
+    function actualizarTotales() {
+        let efectivo = calcularEfectivo();
+        let tarjeta = parseDivisa('tarjeta');
+        let transferencia = parseDivisa('transferencia');
+        let vales = parseDivisa('vales');
+        let total_arqueo = efectivo + tarjeta + transferencia + vales;
+        document.getElementById('total_arqueo').innerText = total_arqueo.toFixed(2);
+        document.getElementById('corte_entregado_hidden').value = total_arqueo.toFixed(2);
+
+        let venta_sistema = Number(document.getElementById('total_ventas_usuario').value) || 0;
+        let faltante = venta_sistema - total_arqueo;
+        document.getElementById('faltante_arqueo').innerText = faltante.toFixed(2);
+        document.getElementById('faltante_hidden').value = faltante.toFixed(2);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        actualizarTotales();
+        let inputs = document.querySelectorAll('.divisas');
+        inputs.forEach(function(input) {
+            input.addEventListener('input', actualizarTotales);
+        });
+    });
+
+    function imprimirPDF() {
+        let fecha = new Date().toLocaleString();
+        let billetes_str = "$20 x " + document.getElementById('billete_20').value +
+            ", $50 x " + document.getElementById('billete_50').value +
+            ", $100 x " + document.getElementById('billete_100').value +
+            ", $200 x " + document.getElementById('billete_200').value +
+            ", $500 x " + document.getElementById('billete_500').value +
+            ", $1000 x " + document.getElementById('billete_1000').value;
+        let monedas_str = "$0.10 x " + document.getElementById('moneda_010').value +
+            ", $0.50 x " + document.getElementById('moneda_050').value +
+            ", $1 x " + document.getElementById('moneda_1').value +
+            ", $2 x " + document.getElementById('moneda_2').value +
+            ", $5 x " + document.getElementById('moneda_5').value +
+            ", $10 x " + document.getElementById('moneda_10').value +
+            ", $20 x " + document.getElementById('moneda_20').value;
+
+        let total_efectivo = document.getElementById('total_efectivo').value;
+        let tarjeta = document.getElementById('tarjeta').value;
+        let transferencia = document.getElementById('transferencia').value;
+        let vales = document.getElementById('vales').value;
+        let total_arqueo = document.getElementById('total_arqueo').innerText;
+        let venta_sistema = document.getElementById('total_ventas_usuario').value;
+        let faltante = document.getElementById('faltante_arqueo').innerText;
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("Nota de Corte de Caja - FarmaCaRe", 10, 10);
+        doc.text("Fecha: " + fecha, 10, 20);
+        doc.text("Usuario: ____________________", 10, 30);
+        doc.text("Administrador/Gerente: ____________________", 10, 40);
+        doc.text("Billetes: " + billetes_str, 10, 50);
+        doc.text("Monedas: " + monedas_str, 10, 60);
+        doc.text("Total Efectivo: $" + total_efectivo, 10, 70);
+        doc.text("Tarjeta: $" + tarjeta, 10, 80);
+        doc.text("Transferencia: $" + transferencia, 10, 90);
+        doc.text("Vales: $" + vales, 10, 100);
+        doc.text("Total arqueo (entregado): $" + total_arqueo, 10, 110);
+        doc.text("Venta registrada en sistema: $" + venta_sistema, 10, 120);
+        doc.text("Faltante: $" + faltante, 10, 130);
+        doc.text("Firma Usuario: ____________________", 10, 150);
+        doc.text("Firma Administrador/Gerente: ____________________", 10, 160);
+        doc.save("nota_corte_caja.pdf");
+    }
+</script>
+{% endblock %}

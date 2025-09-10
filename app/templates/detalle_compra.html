@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Detalle Compra #{{ compra.id }} - FarmaCaRe{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Detalle de Compra #{{ compra.id }}</h2>
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <strong>Proveedor:</strong> {{ compra.proveedor.nombre if compra.proveedor else '' }}<br>
+            <strong>Folio de factura:</strong> {{ compra.folio_factura }}<br>
+            <strong>Fecha:</strong> {{ compra.fecha_compra.strftime('%d/%m/%Y %H:%M') if compra.fecha_compra else '' }}<br>
+            <strong>Usuario:</strong> {{ compra.usuario.nombre if compra.usuario else '' }}<br>
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-success" onclick="exportCompraToExcel()">Exportar a Excel</button>
+            <button class="btn btn-danger" onclick="exportCompraToPDF()">Exportar a PDF</button>
+            <a href="{{ url_for('compras.lista') }}" class="btn btn-link">Regresar</a>
+        </div>
+    </div>
+    <h4>Productos de la compra</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered" id="tablaDetalleCompra">
+            <thead class="table-light">
+                <tr>
+                    <th>Código de barras</th>
+                    <th>Producto</th>
+                    <th>Presentación</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>IVA</th>
+                    <th>Descuento</th>
+                    <th>Importe</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for det in compra.detalles %}
+                <tr>
+                    <td>{{ det.producto.codigo_barras if det.producto else '' }}</td>
+                    <td>{{ det.producto.nombre_comercial if det.producto else '' }}</td>
+                    <td>{{ det.producto.presentacion if det.producto else '' }}</td>
+                    <td>{{ det.cantidad }}</td>
+                    <td>${{ '%.2f' % det.precio_unitario }}</td>
+                    <td>{{ det.iva }}%</td>
+                    <td>{{ det.descuento }}%</td>
+                    <td>${{ '%.2f' % det.importe }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-3">
+            <label class="form-label"><strong>Subtotal:</strong></label>
+            {% set subtotal = 0 %}
+            {% for d in compra.detalles %}
+                {% set subtotal = subtotal + (d.precio_unitario * d.cantidad) %}
+            {% endfor %}
+            <input type="text" class="form-control" value="{{ subtotal | round(2) }}" readonly>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label"><strong>Total IVA:</strong></label>
+            {% set total_iva = 0 %}
+            {% for d in compra.detalles %}
+                {% set total_iva = total_iva + (d.precio_unitario * d.cantidad * d.iva/100) %}
+            {% endfor %}
+            <input type="text" class="form-control" value="{{ total_iva | round(2) }}" readonly>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label"><strong>Total descuento:</strong></label>
+            {% set total_descuento = 0 %}
+            {% for d in compra.detalles %}
+                {% set total_descuento = total_descuento + (d.precio_unitario * d.cantidad * d.descuento/100) %}
+            {% endfor %}
+            <input type="text" class="form-control" value="{{ total_descuento | round(2) }}" readonly>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label"><strong>Total compra:</strong></label>
+            <input type="text" class="form-control" value="{{ compra.total | round(2) }}" readonly>
+        </div>
+    </div>
+</div>
+<!-- Librerías JS para exportación -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
+<script>
+function exportCompraToExcel() {
+    var wb = XLSX.utils.table_to_book(document.getElementById('tablaDetalleCompra'), {sheet:"DetalleCompra"});
+    XLSX.writeFile(wb, "compra_{{ compra.id }}.xlsx");
+}
+function exportCompraToPDF() {
+    var { jsPDF } = window.jspdf;
+    var doc = new jsPDF();
+    doc.text("Detalle Compra #{{ compra.id }}", 10, 10);
+    doc.autoTable({ html: '#tablaDetalleCompra', theme: 'grid', startY: 20 });
+    doc.save('compra_{{ compra.id }}.pdf');
+}
+</script>
+{% endblock %}

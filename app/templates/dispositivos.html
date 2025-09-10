@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Dispositivos Médicos{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Dispositivos Médicos</h2>
+    <a href="{{ url_for('dispositivos.agregar') }}" class="btn btn-success mb-3">Agregar Dispositivo</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Código Barras</th>
+                <th>Nombre Comercial</th>
+                <th>Nombre Común</th>
+                <th>Laboratorio</th>
+                <th>Presentación</th>
+                <th>IVA</th>
+                <th>Precio Venta</th>
+                <!-- <th>Stock</th> (eliminado) -->
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in dispositivos %}
+            <tr>
+                <td>{{ d.codigo_barras }}</td>
+                <td>{{ d.nombre_comercial }}</td>
+                <td>{{ d.nombre_comun }}</td>
+                <td>{{ d.laboratorio }}</td>
+                <td>{{ d.presentacion }}</td>
+                <td>{{ d.iva }}</td>
+                <td>${{ '%.2f' % d.precio_venta }}</td>
+                <!-- <td>{{ d.stock }}</td> (eliminado) -->
+                <td>
+                    <a href="{{ url_for('dispositivos.editar', id=d.id) }}" class="btn btn-primary btn-sm">Editar</a>
+                    <form method="POST" action="{{ url_for('dispositivos.eliminar', id=d.id) }}" style="display:inline;" onsubmit="return confirm('¿Seguro que quieres eliminar este dispositivo?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

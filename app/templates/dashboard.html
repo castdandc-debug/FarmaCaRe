@@ -1,19 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}Panel de Funciones - FarmaCaRe{% endblock %}
+{% block title %}Dashboard - FarmaCaRe{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Panel de Funciones - FarmaCaRe</h2>
+    <h2>Bienvenido al Sistema FarmaCaRe</h2>
+    <p>Usuario: {{ current_user.nombre }} | Rol: {{ current_user.rol }}</p>
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-light btn-sm mb-3">Cerrar Sesión</a>
     <div class="row">
-        <div class="col-md-6">
-            <a href="{{ url_for('usuarios.lista') }}" class="btn btn-success w-100 mb-2">👥 Usuarios</a>
-            <a href="{{ url_for('clientes.lista') }}" class="btn btn-primary w-100 mb-2">👤 Clientes</a>
-            <a href="{{ url_for('medicamentos.lista') }}" class="btn btn-warning w-100 mb-2">💊 Medicamentos</a>
-            <a href="{{ url_for('proveedores.lista') }}" class="btn btn-info w-100 mb-2">🏢 Proveedores</a>
-            <a href="{{ url_for('ventas.nueva') }}" class="btn btn-danger w-100 mb-2">🛒 Ventas</a>
-            <a href="{{ url_for('compras.lista') }}" class="btn btn-secondary w-100 mb-2">📦 Compras</a>
-            <a href="{{ url_for('reportes.inventario') }}" class="btn btn-light w-100 mb-2">📊 Reportes e Inventarios</a>
+        <div class="col-md-4">
+            <a href="{{ url_for('productos.lista') }}" class="btn btn-primary w-100 mb-2">📦 Productos</a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ url_for('ventas.nueva') }}" class="btn btn-info w-100 mb-2">🛒 Ventas</a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ url_for('usuarios.lista') }}" class="btn btn-warning w-100 mb-2">👥 Usuarios</a>
         </div>
     </div>
 </div>

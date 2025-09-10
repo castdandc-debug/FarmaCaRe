@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Editar Venta{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <a href="{{ url_for('ventas.listado') }}" class="btn btn-secondary mb-3">&larr; Volver al listado</a>
+    <h2>Editar venta (Folio: {{ venta.folio }})</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Cliente:</label>
+            <select name="cliente_id" class="form-select">
+                <option value="">Público en general</option>
+                {% for c in clientes %}
+                    <option value="{{ c.id }}" {% if venta.cliente_id==c.id %}selected{% endif %}>{{ c.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Método de pago:</label>
+            <select name="metodo_pago" class="form-select">
+                <option value="efectivo" {% if venta.metodo_pago=="efectivo" %}selected{% endif %}>Efectivo</option>
+                <option value="tarjeta" {% if venta.metodo_pago=="tarjeta" %}selected{% endif %}>Tarjeta</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Productos vendidos:</label>
+            <ul class="list-group">
+                {% for d in detalles %}
+                    <li class="list-group-item">
+                        {{ d.producto.nombre_comercial }} | Cant: {{ d.cantidad }} | ${{ '%.2f'|format(d.precio_unitario) }}
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="alert alert-info mt-2">La edición de productos, cantidades y precios estará disponible próximamente.</div>
+        </div>
+        <button type="submit" class="btn btn-warning">Guardar cambios</button>
+    </form>
+</div>
+{% endblock %}

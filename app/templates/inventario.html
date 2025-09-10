@@ -1,26 +1,63 @@
 {% extends "base.html" %}
 
-{% block title %}Inventario - FarmaCaRe{% endblock %}
+{% block title %}Reportes e Inventario - FarmaCaRe{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Inventario</h2>
-    <table class="table table-bordered">
+    <h2>Reportes e Inventario: Inventario</h2>
+
+    <!-- Botones de navegación solo para reportes -->
+    <div class="mb-3 d-flex flex-wrap gap-2">
+        <a href="{{ url_for('informe.informe_general') }}" class="btn btn-outline-dark">Informe General</a>
+        <a href="{{ url_for('informe.cortes_caja') }}" class="btn btn-outline-secondary">Cortes de Caja</a>
+        <a href="{{ url_for('informe.ajustes_inventario') }}" class="btn btn-outline-warning">Ajustes de Inventario</a>
+        <a href="{{ url_for('informe.kardex') }}" class="btn btn-outline-primary">Kardex</a>
+        <a href="{{ url_for('informe.no_hay') }}" class="btn btn-outline-danger">No Hay</a>
+    </div>
+
+    <!-- Filtros y acciones para tabla de inventario -->
+    <div class="mb-3">
+        <form class="d-flex gap-2" method="get" action="{{ url_for('inventario.lista') }}">
+            <input type="text" class="form-control" name="buscar" placeholder="Buscar producto..." value="{{ request.args.get('buscar', '') }}">
+            <select class="form-select" name="tipo_producto">
+                <option value="">Todos los tipos</option>
+                <option value="I">I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+                <option value="V">V</option>
+                <option value="VI">VI</option>
+                <option value="antibiotico">Antibiótico</option>
+                <option value="dispositivo">Dispositivo médico</option>
+            </select>
+            <button type="submit" class="btn btn-outline-primary">Filtrar</button>
+            <a href="{{ url_for('inventario.exportar_excel') }}" class="btn btn-outline-info">Exportar Excel</a>
+            <a href="{{ url_for('inventario.exportar_pdf') }}" class="btn btn-outline-success">Exportar PDF</a>
+            <button type="button" class="btn btn-outline-secondary" onclick="window.print()">Imprimir</button>
+        </form>
+    </div>
+
+    <!-- Tabla de productos en inventario -->
+    <table class="table table-bordered" id="tabla-inventario">
         <thead class="table-light">
             <tr>
                 <th>Código</th>
                 <th>Nombre</th>
+                <th>Presentación</th>
+                <th>Tipo</th>
                 <th>Stock</th>
-                <th>Precio</th>
+                <th>Cantidad Real</th>
             </tr>
         </thead>
         <tbody>
-            {% for m in medicamentos %}
+            {% for inv in inventarios %}
             <tr>
-                <td>{{ m.codigo_barras }}</td>
-                <td>{{ m.nombre_comercial }}</td>
-                <td>{{ m.stock }}</td>
-                <td>{{ m.precio_venta }}</td>
+                <td>{{ inv.producto.codigo_barras }}</td>
+                <td>{{ inv.producto.nombre_comercial }}</td>
+                <td>{{ inv.producto.presentacion }}</td>
+                <td>{{ inv.producto.tipo }}</td>
+                <td>{{ inv.cantidad }}</td>
+                <td><input type="text" class="form-control" placeholder="Cantidad real"></td>
             </tr>
             {% endfor %}
         </tbody>

@@ -10,8 +10,8 @@
         <thead class="table-light">
             <tr>
                 <th>ID</th>
-                <th>RUC</th>
-                <th>Nombre</th>
+                <th>RFC</th>
+                <th>Nombre o Razón Social</th>
                 <th>Teléfono</th>
                 <th>Dirección</th>
                 <th>Email</th>
@@ -22,10 +22,20 @@
             {% for p in proveedores %}
             <tr>
                 <td>{{ p.id }}</td>
-                <td>{{ p.ruc }}</td>
+                <td>{{ p.rfc }}</td>
                 <td>{{ p.nombre }}</td>
                 <td>{{ p.telefono }}</td>
                 <td>{{ p.direccion }}</td>
                 <td>{{ p.email }}</td>
                 <td>
-                    <a href="{{ url_for
+                    <a href="{{ url_for('proveedores.editar', id=p.id) }}" class="btn btn-sm btn-warning">Editar</a>
+                    <form method="POST" action="{{ url_for('proveedores.eliminar', id=p.id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas eliminar este proveedor?')">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

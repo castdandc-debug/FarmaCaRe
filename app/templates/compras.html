@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Compras - FarmaCaRe{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Gestión de Compras</h2>
+    <a class="btn btn-primary mb-3" href="{{ url_for('compras.nueva') }}">Registrar nueva compra</a>
+    <div class="mb-3">
+        <button class="btn btn-success" onclick="exportToExcel()">Exportar a Excel</button>
+        <button class="btn btn-danger" onclick="exportToPDF()">Exportar a PDF</button>
+        <a class="btn btn-warning" href="{{ url_for('compras.generar_pedido_excel') }}">
+            Generar pedido
+        </a>
+    </div>
+    {% if compras %}
+    <table class="table table-bordered" id="tablaCompras">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Proveedor</th>
+                <th>Factura</th>
+                <th>Total</th>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for compra in compras %}
+            <tr>
+                <td>{{ compra.id }}</td>
+                <td>
+                    {% if compra.proveedor %}
+                        {{ compra.proveedor.nombre }}
+                    {% else %}
+                        Sin proveedor
+                    {% endif %}
+                </td>
+                <td>
+                    {% if compra.folio_factura %}
+                        {{ compra.folio_factura }}
+                    {% else %}
+                        Sin factura
+                    {% endif %}
+                </td>
+                <td>${{ '%.2f' % compra.total }}</td>
+                <td>{{ compra.fecha_compra.strftime('%d/%m/%Y %H:%M') if compra.fecha_compra else '' }}</td>
+                <td>
+                    {% if compra.usuario %}
+                        {{ compra.usuario.nombre }}
+                    {% else %}
+                        Sin usuario
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('compras.detalle', compra_id=compra.id) }}" class="btn btn-outline-primary btn-sm" title="Ver detalle">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    {% if current_user.rol == "Administrador" %}
+                        <a href="{{ url_for('compras.editar', compra_id=compra.id) }}" class="btn btn-outline-warning btn-sm" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="{{ url_for('compras.eliminar', compra_id=compra.id) }}" method="post" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar esta compra?');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay compras registradas.</p>
+    {% endif %}
+</div>
+
+<!-- Font Awesome para iconos -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Exportación Excel y PDF (usando libs JS) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
+<script>
+function exportToExcel() {
+    var wb = XLSX.utils.table_to_book(document.getElementById('tablaCompras'), {sheet:"Compras"});
+    XLSX.writeFile(wb, "compras.xlsx");
+}
+
+function exportToPDF() {
+    var { jsPDF } = window.jspdf;
+    var doc = new jsPDF();
+    doc.autoTable({ html: '#tablaCompras', theme: 'grid' });
+    doc.save('compras.pdf');
+}
+</script>
+{% endblock %}

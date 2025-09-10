@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Ticket de Venta{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-print-none mb-3">
+        <a href="{{ url_for('ventas.nueva') }}" class="btn btn-success">&larr; Nueva Venta</a>
+        <button onclick="window.print()" class="btn btn-primary"><i class="bi bi-printer"></i> Imprimir Ticket</button>
+        <!-- Botón de facturar venta -->
+        <a href="{{ url_for('ventas.facturar', venta_id=venta.id) }}" class="btn btn-outline-success btn-sm ms-2">
+            <i class="bi bi-file-earmark-text"></i> Facturar esta venta
+        </a>
+    </div>
+    <div class="card p-3" style="max-width: 400px; margin:auto;">
+        <h4 class="text-center">FarmaCaRe</h4>
+        <div class="text-center small mb-2">Ticket de venta<br>
+            Folio: <b>{{ venta.folio }}</b><br>
+            Fecha: {{ venta.fecha.strftime('%d/%m/%Y %H:%M') }}
+        </div>
+        {% if cliente %}
+            <div class="mb-2"><b>Cliente:</b> {{ cliente.nombre }}</div>
+        {% else %}
+            <div class="mb-2"><b>Cliente:</b> Público en general</div>
+        {% endif %}
+        <div class="mb-2"><b>Vendedor:</b> {{ venta.usuario.nombre }}</div>
+        <table class="table table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th>Cant.</th>
+                    <th>$ Unit.</th>
+                    <th>Importe</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for d in detalles %}
+                <tr>
+                    <td>{{ d.producto.nombre_comercial }}</td>
+                    <td>{{ d.cantidad }}</td>
+                    <td>${{ '%.2f'|format(d.precio_unitario) }}</td>
+                    <td>${{ '%.2f'|format(d.importe) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-2">
+            <div>Subtotal: ${{ '%.2f'|format(venta.subtotal) }}</div>
+            <div>IVA: ${{ '%.2f'|format(venta.iva) }}</div>
+            <div>Descuento: ${{ '%.2f'|format(venta.descuento) }}</div>
+            <div class="fw-bold">Total: ${{ '%.2f'|format(venta.total) }}</div>
+        </div>
+        <div class="mt-2 text-center small">¡Gracias por su compra!</div>
+    </div>
+</div>
+<style>
+@media print {
+    body * { visibility: hidden; }
+    .card, .card * { visibility: visible; }
+    .card { position: absolute; left: 0; top: 0; width: 400px; }
+    .d-print-none { display: none !important; }
+}
+</style>
+{% endblock %}

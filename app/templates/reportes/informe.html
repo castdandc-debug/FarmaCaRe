@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Informe General - FarmaCaRe{% endblock %}
+{% block content %}
+<div class="container mt-4">
+
+    <h2>Reportes e Inventario: Informe General</h2>
+
+    <!-- Botones de navegación a los otros reportes -->
+    <div class="mb-3 d-flex flex-wrap gap-2">
+        {% set actual = "informe_general" %}
+        {% if actual != "informe_general" %}
+        <a href="{{ url_for('informe.informe_general') }}" class="btn btn-outline-dark">Informe General</a>
+        {% endif %}
+        {% if actual != "cortes_caja" %}
+        <a href="{{ url_for('informe.cortes_caja') }}" class="btn btn-outline-secondary">Cortes de Caja</a>
+        {% endif %}
+        {% if actual != "ajustes_inventario" %}
+        <a href="{{ url_for('informe.ajustes_inventario') }}" class="btn btn-outline-warning">Ajustes de Inventario</a>
+        {% endif %}
+        {% if actual != "kardex" %}
+        <a href="{{ url_for('informe.kardex') }}" class="btn btn-outline-primary">Kardex</a>
+        {% endif %}
+        {% if actual != "no_hay" %}
+        <a href="{{ url_for('informe.no_hay') }}" class="btn btn-outline-danger">No Hay</a>
+        {% endif %}
+        {% if actual != "inventario" %}
+        <a href="{{ url_for('inventario.lista') }}" class="btn btn-outline-success">Inventario</a>
+        {% endif %}
+    </div>
+
+    <form method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="busqueda" class="form-control" placeholder="Buscar producto..." value="{{ busqueda }}">
+            <button class="btn btn-primary" type="submit">Buscar</button>
+        </div>
+    </form>
+    <div class="row mb-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Total Compras</h5>
+                    <p class="fw-bold text-success">${{ '%.2f'|format(total_compras) }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Total Ventas</h5>
+                    <p class="fw-bold text-primary">${{ '%.2f'|format(total_ventas) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h3 class="mt-4">Margen por Producto</h3>
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Venta</th>
+                <th>Costo Promedio</th>
+                <th>Margen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.nombre_comercial }}</td>
+                <td>{{ producto.cantidad }}</td>
+                <td>${{ '%.2f'|format(producto.precio_venta) }}</td>
+                <td>${{ '%.2f'|format(producto.costo) }}</td>
+                <td>${{ '%.2f'|format(producto.margen) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h3 class="mt-4">Cierres de Caja</h3>
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Corte Entregado</th>
+                <th>Faltante</th>
+                <th>Editar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cierre in cierres %}
+            <tr>
+                <td>{{ cierre.fecha.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ cierre.usuario.nombre }}</td>
+                <td>${{ '%.2f'|format(cierre.corte_entregado) }}</td>
+                <td>
+                    <form action="{{ url_for('informe.editar_cierre', id=cierre.id) }}" method="post" class="d-inline">
+                        <input type="number" name="faltante" value="{{ cierre.faltante }}" step="0.01" class="form-control form-control-sm" style="width:100px;display:inline;">
+                        <button type="submit" class="btn btn-sm btn-warning">Actualizar</button>
+                    </form>
+                </td>
+                <td>
+                    <!-- Botón extra para editar más campos si lo quieres -->
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

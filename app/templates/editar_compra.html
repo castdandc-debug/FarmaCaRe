@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+{% block title %}Editar Compra - FarmaCaRe{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Editar Compra</h2>
+    <form method="POST" id="formCompra">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="proveedor_id" class="form-label">Proveedor:</label>
+                <select name="proveedor_id" id="proveedor_id" class="form-select" required>
+                  {% for proveedor in proveedores %}
+                    <option value="{{ proveedor.id }}" {% if proveedor.id == compra.proveedor_id %}selected{% endif %}>
+                      {{ proveedor.nombre }}
+                    </option>
+                  {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="folio_factura" class="form-label">Folio de Factura:</label>
+                <input type="text" name="folio_factura" id="folio_factura" class="form-control" value="{{ compra.folio_factura }}">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="codigo_barras" class="form-label">Código de barras:</label>
+                <div class="input-group">
+                    <input type="text" id="codigo_barras" name="codigo_barras" class="form-control" placeholder="Escanea o ingresa el código">
+                    <button type="button" class="btn btn-outline-secondary" id="btn-escanear-codigo-compra">Escanear</button>
+                </div>
+                <div id="reader-compra" style="width:300px; display:none; margin-top:10px;"></div>
+            </div>
+            <div class="col-md-6">
+                <label for="busqueda_producto" class="form-label">Buscar producto:</label>
+                <input type="text" id="busqueda_producto" class="form-control" placeholder="Nombre o clave de producto">
+                <div id="resultados_busqueda" class="list-group"></div>
+            </div>
+        </div>
+        <div id="formProductoSeleccionado" style="display:none; margin-top: 20px;">
+            <div class="card card-body">
+                <div><b id="nombreProducto"></b> <span id="presentacionProducto"></span></div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label class="form-label">Precio compra</label>
+                        <input type="number" id="precioProducto" class="form-control" step="0.01">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Unidades</label>
+                        <input type="number" id="cantidadProducto" class="form-control" min="1" value="1">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Descuento (%)</label>
+                        <input type="number" id="descuentoProducto" class="form-control" min="0" max="100" value="0">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">IVA (%)</label>
+                        <input type="number" id="ivaProducto" class="form-control" min="0" max="100" value="16">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Importe</label>
+                        <input type="text" id="importeProducto" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-primary" id="btnAgregarCarrito">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h4 class="mt-4">Productos agregados</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle" id="tablaCarrito">
+                <thead class="table-light">
+                    <tr>
+                        <th>Código de barras</th>
+                        <th>Producto</th>
+                        <th>Presentación</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>IVA</th>
+                        <th>Descuento</th>
+                        <th>Importe</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- JS llena el carrito aquí -->
+                </tbody>
+            </table>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <label for="subtotal" class="form-label">Subtotal:</label>
+                <input type="text" id="subtotal" name="subtotal" class="form-control" readonly>
+            </div>
+            <div class="col-md-3">
+                <label for="total_iva" class="form-label">IVA:</label>
+                <input type="text" id="total_iva" name="total_iva" class="form-control" readonly>
+            </div>
+            <div class="col-md-3">
+                <label for="total_descuento" class="form-label">Descuento:</label>
+                <input type="text" id="total_descuento" name="total_descuento" class="form-control" readonly>
+            </div>
+            <div class="col-md-3">
+                <label for="total" class="form-label">Total:</label>
+                <input type="text" id="total" name="total" class="form-control" readonly>
+            </div>
+        </div>
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Guardar cambios</button>
+            <a href="{{ url_for('compras.lista') }}" class="btn btn-link">Cancelar</a>
+        </div>
+        <input type="hidden" name="carrito" id="inputCarrito">
+    </form>
+</div>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+// --- INICIALIZAR CARRITO CON LOS DETALLES DE LA COMPRA ---
+let carrito = [
+    {% for detalle in detalles %}
+    {
+        id: "{{ detalle.producto_id }}",
+        codigo: "{{ detalle.producto.codigo_barras if detalle.producto else '' }}",
+        nombre: "{{ detalle.producto.nombre_comercial if detalle.producto else '' }}",
+        presentacion: "{{ detalle.producto.presentacion if detalle.producto else '' }}",
+        precio: {{ detalle.precio_unitario }},
+        cantidad: {{ detalle.cantidad }},
+        descuento: {{ detalle.descuento }},
+        iva: {{ detalle.iva }},
+        importe: {{ detalle.importe }},
+        tipo: "{{ detalle.producto.tipo if detalle.producto else 'medicamento' }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
+// --- FUNCION PARA RENDERIZAR LA TABLA DEL CARRITO ---
+function renderizarCarrito() {
+    let tbody = document.querySelector("#tablaCarrito tbody");
+    tbody.innerHTML = "";
+    carrito.forEach((item, idx) => {
+        let fila = document.createElement("tr");
+        fila.innerHTML = `
+            <td>${item.codigo}</td>
+            <td>${item.nombre}<br>${item.presentacion || ""}</td>
+            <td><input type="number" min="1" class="form-control cantidad" value="${item.cantidad}" data-idx="${idx}"></td>
+            <td><input type="number" step="0.01" class="form-control precio" value="${item.precio}" data-idx="${idx}"></td>
+            <td><input type="number" min="0" max="100" class="form-control iva" value="${item.iva}" data-idx="${idx}"></td>
+            <td><input type="number" min="0" max="100" class="form-control descuento" value="${item.descuento}" data-idx="${idx}"></td>
+            <td class="importe">$${parseFloat(item.importe).toFixed(2)}</td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger btn-eliminar" data-idx="${idx}">Eliminar</button>
+            </td>
+        `;
+        tbody.appendChild(fila);
+    });
+    document.querySelectorAll(".btn-eliminar").forEach(btn => {
+        btn.onclick = function() {
+            let idx = this.getAttribute("data-idx");
+            carrito.splice(idx, 1);
+            renderizarCarrito();
+            actualizarTotales();
+        }
+    });
+    document.querySelectorAll('.cantidad, .precio, .iva, .descuento').forEach(input => {
+        input.onchange = function() {
+            let idx = this.getAttribute("data-idx");
+            let item = carrito[idx];
+            item.cantidad = parseFloat(document.querySelector(`.cantidad[data-idx="${idx}"]`).value) || 1;
+            item.precio = parseFloat(document.querySelector(`.precio[data-idx="${idx}"]`).value) || 0;
+            item.iva = parseFloat(document.querySelector(`.iva[data-idx="${idx}"]`).value) || 0;
+            item.descuento = parseFloat(document.querySelector(`.descuento[data-idx="${idx}"]`).value) || 0;
+            // Recalcula importe
+            let subtotal = item.precio * item.cantidad;
+            let montoIVA = subtotal * (item.iva/100);
+            let montoDescuento = subtotal * (item.descuento/100);
+            item.importe = subtotal + montoIVA - montoDescuento;
+            renderizarCarrito();
+            actualizarTotales();
+        }
+    });
+    actualizarTotales();
+}
+
+// --- FUNCION PARA ACTUALIZAR TOTALES ---
+function actualizarTotales() {
+    let subtotal = 0, iva = 0, descuento = 0, total = 0;
+    carrito.forEach(item => {
+        let sub = item.precio * item.cantidad;
+        subtotal += sub;
+        iva += sub * (item.iva/100);
+        descuento += sub * (item.descuento/100);
+    });
+    total = subtotal + iva - descuento;
+    document.getElementById('subtotal').value = subtotal.toFixed(2);
+    document.getElementById('total_iva').value = iva.toFixed(2);
+    document.getElementById('total_descuento').value = descuento.toFixed(2);
+    document.getElementById('total').value = total.toFixed(2);
+}
+
+// --- GUARDAR EL CARRITO EN FORMULARIO ANTES DE ENVIAR ---
+document.getElementById('formCompra').addEventListener('submit', function(e) {
+    let input = document.getElementById('inputCarrito');
+    if (!input) {
+        input = document.createElement('input');
+        input.type = "hidden";
+        input.name = "carrito";
+        input.id = "inputCarrito";
+        this.appendChild(input);
+    }
+    input.value = JSON.stringify(carrito);
+});
+
+// --- ESCANEO DE CODIGO ---
+document.getElementById('btn-escanear-codigo-compra').addEventListener('click', function() {
+    const readerDiv = document.getElementById('reader-compra');
+    readerDiv.style.display = 'block';
+    if (!window.qrScannerCompra) {
+        window.qrScannerCompra = new Html5Qrcode("reader-compra");
+    }
+    window.qrScannerCompra.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText, decodedResult) => {
+            document.getElementById('codigo_barras').value = decodedText;
+            window.qrScannerCompra.stop();
+            readerDiv.style.display = 'none';
+            buscarProductoPorCodigo(decodedText);
+        },
+        (errorMessage) => {}
+    ).catch((err) => {
+        alert("No se pudo acceder a la cámara: " + err);
+        readerDiv.style.display = 'none';
+    });
+});
+
+// --- BUSQUEDA DE PRODUCTO ---
+document.getElementById('busqueda_producto').addEventListener('input', function() {
+    let q = this.value.trim();
+    if (q.length < 2) {
+        document.getElementById('resultados_busqueda').innerHTML = '';
+        return;
+    }
+    fetch(`/compras/compras/buscar_producto?q=${encodeURIComponent(q)}`)
+        .then(resp => resp.json())
+        .then(data => {
+            let resultados = '';
+            data.forEach(prod => {
+                resultados += `<a href="#" class="list-group-item list-group-item-action" data-id="${prod.id}" data-nombre="${prod.nombre}" data-codigo="${prod.codigo}" data-precio="${prod.precio}" data-presentacion="${prod.presentacion || ''}" data-tipo="${prod.tipo}">${prod.nombre} [${prod.codigo}]</a>`;
+            });
+            document.getElementById('resultados_busqueda').innerHTML = resultados;
+            document.querySelectorAll('#resultados_busqueda a').forEach(a => {
+                a.onclick = function(e) {
+                    e.preventDefault();
+                    cargarProductoSeleccionado(this.dataset);
+                    document.getElementById('resultados_busqueda').innerHTML = '';
+                    document.getElementById('busqueda_producto').value = this.dataset.nombre;
+                };
+            });
+        });
+});
+
+document.getElementById('codigo_barras').addEventListener('change', function() {
+    buscarProductoPorCodigo(this.value.trim());
+});
+function buscarProductoPorCodigo(q) {
+    if (!q) return;
+    fetch(`/compras/compras/buscar_producto?q=${encodeURIComponent(q)}`)
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.length) {
+                cargarProductoSeleccionado(data[0]);
+            } else {
+                alert("Producto no encontrado.");
+            }
+        });
+}
+
+function cargarProductoSeleccionado(prod) {
+    document.getElementById('nombreProducto').textContent = prod.nombre;
+    document.getElementById('presentacionProducto').textContent = prod.presentacion || '';
+    document.getElementById('precioProducto').value = prod.precio || '';
+    document.getElementById('ivaProducto').value = prod.iva !== undefined ? prod.iva : 16;
+    document.getElementById('descuentoProducto').value = prod.descuento !== undefined ? prod.descuento : 0;
+    document.getElementById('cantidadProducto').value = 1;
+    calcularImporteProducto();
+    document.getElementById('formProductoSeleccionado').style.display = "block";
+    document.getElementById('formProductoSeleccionado').dataset.productoId = prod.id;
+    document.getElementById('formProductoSeleccionado').dataset.tipo = prod.tipo || "medicamento";
+    document.getElementById('codigo_barras').value = prod.codigo;
+}
+
+['precioProducto', 'cantidadProducto', 'ivaProducto', 'descuentoProducto'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calcularImporteProducto);
+});
+function calcularImporteProducto() {
+    let precio = parseFloat(document.getElementById('precioProducto').value) || 0;
+    let cantidad = parseFloat(document.getElementById('cantidadProducto').value) || 0;
+    let iva = parseFloat(document.getElementById('ivaProducto').value) || 0;
+    let descuento = parseFloat(document.getElementById('descuentoProducto').value) || 0;
+    let subtotal = precio * cantidad;
+    let montoIVA = subtotal * (iva/100);
+    let montoDescuento = subtotal * (descuento/100);
+    let importe = subtotal + montoIVA - montoDescuento;
+    document.getElementById('importeProducto').value = importe.toFixed(2);
+}
+
+document.getElementById('btnAgregarCarrito').addEventListener('click', function() {
+    let producto = {
+        id: document.getElementById('formProductoSeleccionado').dataset.productoId,
+        codigo: document.getElementById('codigo_barras').value,
+        nombre: document.getElementById('nombreProducto').textContent,
+        presentacion: document.getElementById('presentacionProducto').textContent,
+        precio: parseFloat(document.getElementById('precioProducto').value),
+        cantidad: parseInt(document.getElementById('cantidadProducto').value),
+        descuento: parseFloat(document.getElementById('descuentoProducto').value),
+        iva: parseFloat(document.getElementById('ivaProducto').value),
+        importe: parseFloat(document.getElementById('importeProducto').value),
+        tipo: document.getElementById('formProductoSeleccionado').dataset.tipo || 'medicamento'
+    };
+    carrito.push(producto);
+    renderizarCarrito();
+    document.getElementById('formProductoSeleccionado').style.display = "none";
+    document.getElementById('codigo_barras').value = "";
+    document.getElementById('busqueda_producto').value = "";
+});
+
+// --- INICIALIZAR TABLA AL CARGAR ---
+renderizarCarrito();
+
+</script>
+{% endblock %}

@@ -1,46 +1,45 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_required, current_user
-from app.models import db, Inventario, Medicamento, DispositivoMedico, AjusteInventario
+from flask import Blueprint, send_file, render_template
+from flask_login import login_required
+import pandas as pd
+import io
+from datetime import datetime
 
-inventario_bp = Blueprint('inventario', __name__, template_folder='../templates')
+from app.models import Inventario  # Importa tu modelo correctamente
 
-@inventario_bp.route('/lista')
+bp = Blueprint('inventario', __name__, url_prefix='/inventario')
+
+@bp.route('/lista')
 @login_required
 def lista():
     inventarios = Inventario.query.all()
     return render_template('inventario.html', inventarios=inventarios)
 
-@inventario_bp.route('/ajustar/<string:tipo>/<int:producto_id>', methods=['GET', 'POST'])
+@bp.route('/exportar_excel')
 @login_required
-def ajustar(tipo, producto_id):
-    if tipo == 'Medicamento':
-        producto = Medicamento.query.get_or_404(producto_id)
-    elif tipo == 'Dispositivo':
-        producto = DispositivoMedico.query.get_or_404(producto_id)
-    else:
-        flash('Tipo de producto no válido.', 'error')
-        return redirect(url_for('inventario.lista'))
+def exportar_excel():
+    inventarios = Inventario.query.all()
+    data = []
+    for inv in inventarios:
+        if hasattr(inv, 'producto') and inv.producto and inv.cantidad > 0:
+            data.append({
+                "Código": inv.producto.codigo_barras,
+                "Nombre": inv.producto.nombre_comercial,
+                "Presentación": inv.producto.presentacion,
+                "Tipo": inv.producto.tipo,
+                "Stock": inv.cantidad,
+            })
+    df = pd.DataFrame(data) if data else pd.DataFrame(columns=["Código", "Nombre", "Presentación", "Tipo", "Stock"])
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Inventario')
+    output.seek(0)
+    return send_file(output, download_name="inventario.xlsx", as_attachment=True)
 
-    inventario = Inventario.query.filter_by(producto_id=producto_id, producto_tipo=tipo).first()
-    if not inventario:
-        inventario = Inventario(producto_id=producto_id, producto_tipo=tipo, cantidad=producto.stock)
-        db.session.add(inventario)
-        db.session.commit()
-
-    if request.method == 'POST':
-        cantidad_ajuste = int(request.form.get('cantidad_ajuste'))
-        razon = request.form.get('razon')
-        ajuste = AjusteInventario(
-            producto_id=producto_id,
-            producto_tipo=tipo,
-            cantidad_ajuste=cantidad_ajuste,
-            razon=razon,
-            usuario_id=current_user.id
-        )
-        db.session.add(ajuste)
-        inventario.cantidad += cantidad_ajuste
-        db.session.commit()
-        flash('Ajuste de inventario registrado exitosamente.', 'success')
-        return redirect(url_for('inventario.lista'))
-
-    return render_template('ajuste_inventario.html', producto=producto, inventario=inventario)
+@bp.route('/exportar_pdf')
+@login_required
+def exportar_pdf():
+    inventarios = Inventario.query.all()
+    from weasyprint import HTML
+    rendered = render_template("inventario_pdf.html", inventarios=inventarios, now=datetime.now)
+    pdf = HTML(string=rendered).write_pdf()
+    return send_file(io.BytesIO(pdf), download_name="inventario.pdf", as_attachment=True)

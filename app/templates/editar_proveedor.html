@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Editar Proveedor - FarmaCaRe{% endblock %}
+{% block content %}
+<h2>Editar Proveedor</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label for="rfc">RFC</label>
+        <input type="text" name="rfc" id="rfc" class="form-control" value="{{ proveedor.rfc }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="nombre">Nombre o Razón Social</label>
+        <input type="text" name="nombre" id="nombre" class="form-control" value="{{ proveedor.nombre }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="telefono">Teléfono</label>
+        <input type="text" name="telefono" id="telefono" class="form-control" value="{{ proveedor.telefono }}">
+    </div>
+    <div class="mb-3">
+        <label for="direccion">Dirección</label>
+        <input type="text" name="direccion" id="direccion" class="form-control" value="{{ proveedor.direccion }}">
+    </div>
+    <div class="mb-3">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" class="form-control" value="{{ proveedor.email }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a href="{{ url_for('proveedores.lista') }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

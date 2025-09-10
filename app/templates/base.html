@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons (opcional, recomendado para mejor experiencia en reportes) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
     <div class="background-wrap"></div>
@@ -25,6 +27,38 @@
             </div>
         </div>
     </header>
+
+    <!-- Barra de navegación de reportes (solo visible en endpoints de reportes) -->
+    {% if request.endpoint and request.endpoint.startswith('reportes.') %}
+    <nav class="mb-4">
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+            {% if current_user.rol == 'Administrador' %}
+                <a href="{{ url_for('reportes.informe') }}" class="btn btn-info">
+                    <i class="bi bi-bar-chart"></i> Informe General
+                </a>
+            {% endif %}
+            {% if current_user.rol == 'Administrador' or current_user.rol == 'Caja' %}
+                <a href="{{ url_for('reportes.cortes_caja') }}" class="btn btn-warning">
+                    <i class="bi bi-cash-coin"></i> Cortes de Caja
+                </a>
+                <a href="{{ url_for('reportes.kardex') }}" class="btn btn-secondary">
+                    <i class="bi bi-journal-text"></i> Kardex
+                </a>
+            {% endif %}
+            <a href="{{ url_for('reportes.inventarios') }}" class="btn btn-success">
+                <i class="bi bi-box-seam"></i> Inventarios
+            </a>
+            {% if current_user.rol == 'Administrador' %}
+                <a href="{{ url_for('reportes.ajustes_inventario') }}" class="btn btn-danger">
+                    <i class="bi bi-tools"></i> Ajustes de Inventario
+                </a>
+                <a href="{{ url_for('reportes.no_hay') }}" class="btn btn-dark">
+                    <i class="bi bi-exclamation-circle"></i> No Hay
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+    {% endif %}
 
     <div class="container mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}

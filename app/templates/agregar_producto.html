@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Agregar Producto{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Agregar Producto</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label>Tipo de Producto</label>
+            <select name="tipo_producto" class="form-control" required onchange="toggleTipoCampos(this.value)">
+                <option value="medicamento">Medicamento</option>
+                <option value="dispositivo">Dispositivo Médico</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label>Código de Barras</label>
+            <div class="input-group">
+                <input type="text" name="codigo_barras" id="codigo_barras" class="form-control" required>
+                <button type="button" class="btn btn-outline-secondary" id="btn-escanear-codigo">Escanear</button>
+            </div>
+            <div id="reader" style="width:300px; display:none; margin-top:10px;"></div>
+        </div>
+        <div class="mb-3">
+            <label>Nombre Comercial</label>
+            <input type="text" name="nombre_comercial" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label id="label-nombre-generico">Nombre Genérico</label>
+            <input type="text" name="nombre_generico" class="form-control" required>
+        </div>
+        <div class="mb-3" id="grupo-medicamento">
+            <label>Grupo / Tipo de Medicamento</label>
+            <select name="grupo" class="form-control">
+                <option value="Medicamento I">Medicamento I</option>
+                <option value="Medicamento II">Medicamento II</option>
+                <option value="Medicamento III">Medicamento III</option>
+                <option value="Medicamento IV">Medicamento IV</option>
+                <option value="Medicamento antibiótico">Medicamento antibiótico</option>
+                <option value="Medicamento V">Medicamento V</option>
+                <option value="Medicamento VI">Medicamento VI</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label>Laboratorio</label>
+            <input type="text" name="laboratorio" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>Presentación</label>
+            <input type="text" name="presentacion" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>IVA (%)</label>
+            <input type="number" name="iva" id="iva" step="0.01" class="form-control" value="0.00" required>
+        </div>
+        <div class="mb-3">
+            <label>Descuento (%)</label>
+            <input type="number" name="descuento" id="descuento" step="0.01" class="form-control" value="0.00" required>
+        </div>
+        <div class="mb-3">
+            <label>Precio Público (base)</label>
+            <input type="number" id="precio_publico" step="0.01" class="form-control" value="0.00" required>
+        </div>
+        <div class="mb-3">
+            <label>Precio de Venta (con IVA y descuento)</label>
+            <input type="number" name="precio_venta" id="precio_venta" step="0.01" class="form-control" required readonly>
+        </div>
+        <button type="submit" class="btn btn-success">Agregar</button>
+        <a href="{{ url_for('productos.lista') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+function toggleTipoCampos(tipo) {
+    if (tipo === "medicamento") {
+        document.getElementById("grupo-medicamento").style.display = "block";
+        document.getElementById("label-nombre-generico").innerText = "Nombre Genérico";
+    } else {
+        document.getElementById("grupo-medicamento").style.display = "none";
+        document.getElementById("label-nombre-generico").innerText = "Nombre Común";
+    }
+}
+window.onload = function() {
+    toggleTipoCampos(document.querySelector('select[name="tipo_producto"]').value);
+    calcPrecioVenta();
+};
+
+// Escáner de código de barras
+document.getElementById('btn-escanear-codigo').addEventListener('click', function() {
+    var reader = document.getElementById('reader');
+    reader.style.display = "block";
+    let html5QrcodeScanner = new Html5Qrcode("reader");
+    html5QrcodeScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText, decodedResult) => {
+            document.getElementById('codigo_barras').value = decodedText;
+            html5QrcodeScanner.stop().then(_ => {
+                reader.style.display = "none";
+            }).catch(_ => {
+                reader.style.display = "none";
+            });
+        }
+    ).catch(err => {
+        alert("No se pudo acceder a la cámara: " + err);
+    });
+});
+
+function calcPrecioVenta() {
+    const precioBase = parseFloat(document.getElementById("precio_publico").value) || 0;
+    const descuento = parseFloat(document.getElementById("descuento").value) || 0;
+    const iva = parseFloat(document.getElementById("iva").value) || 0;
+    // Aplica descuento primero
+    let precioConDescuento = precioBase * (1 - descuento/100);
+    // Luego aplica IVA sobre el resultado
+    let precioFinal = precioConDescuento * (1 + iva/100);
+    document.getElementById("precio_venta").value = precioFinal.toFixed(2);
+}
+
+// Eventos para recalcular en tiempo real
+document.getElementById("precio_publico").addEventListener("input", calcPrecioVenta);
+document.getElementById("descuento").addEventListener("input", calcPrecioVenta);
+document.getElementById("iva").addEventListener("input", calcPrecioVenta);
+</script>
+{% endblock %}

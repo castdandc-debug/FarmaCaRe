@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Ajustes de Inventario - FarmaCaRe{% endblock %}
+{% block content %}
+<div class="container mt-4">
+
+    <h2>Reportes e Inventario: Ajustes de Inventario</h2>
+
+    <!-- Botones universales de navegación entre reportes -->
+    <div class="mb-3 d-flex flex-wrap gap-2">
+        <a href="{{ url_for('informe.informe_general') }}" class="btn btn-outline-dark">Informe General</a>
+        <a href="{{ url_for('informe.cortes_caja') }}" class="btn btn-outline-secondary">Cortes de Caja</a>
+        <a href="{{ url_for('informe.kardex') }}" class="btn btn-outline-primary">Kardex</a>
+        <a href="{{ url_for('informe.no_hay') }}" class="btn btn-outline-danger">No Hay</a>
+        <a href="{{ url_for('inventario.lista') }}" class="btn btn-outline-success">Inventario</a>
+    </div>
+
+<h2>Ajuste</h2>
+    <form method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="busqueda" class="form-control" placeholder="Buscar producto (nombre, genérico, código de barras...)" value="{{ busqueda }}">
+            <button class="btn btn-primary" type="submit">Buscar</button>
+        </div>
+    </form>
+
+    <!-- Tabla de productos filtrados -->
+    <table class="table table-bordered table-sm mb-4">
+        <thead>
+            <tr>
+                <th>Código de Barras</th>
+                <th>Producto</th>
+                <th>Presentación</th>
+                <th>Tipo</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.codigo_barras }}</td>
+                <td>{{ producto.nombre_comercial }}</td>
+                <td>{{ producto.presentacion }}</td>
+                <td>{{ producto.tipo }}</td>
+                <td>
+                    <!-- Dropdown de opciones -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownOpciones{{ producto.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                            Opciones
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownOpciones{{ producto.id }}">
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="mostrarAjuste('{{ producto.id }}','entrada','{{ producto.codigo_barras }}','{{ producto.nombre_comercial }}')">Entrada</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="mostrarAjuste('{{ producto.id }}','salida','{{ producto.codigo_barras }}','{{ producto.nombre_comercial }}')">Salida</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="mostrarAjuste('{{ producto.id }}','reorden','{{ producto.codigo_barras }}','{{ producto.nombre_comercial }}')">Punto de reorden</a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Formulario dinámico de ajuste de inventario -->
+    <div id="formAjusteContainer" style="display:none;" class="mb-4">
+        <form method="post" id="formAjusteInventario">
+            <input type="hidden" name="producto_id" id="ajuste_producto_id">
+            <input type="hidden" name="tipo_ajuste" id="ajuste_tipo_ajuste">
+            <div class="mb-2">
+                <label id="ajuste_label_producto" class="fw-bold"></label>
+            </div>
+            <div class="mb-2" id="ajuste_actual_container">
+                <!-- Aquí se mostrará el dato actual según el tipo de ajuste -->
+            </div>
+            <div class="mb-2">
+                <label for="ajuste_cantidad" id="ajuste_label_cantidad">Cantidad</label>
+                <input type="number" name="cantidad" id="ajuste_cantidad" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Confirmar ajuste</button>
+            <button type="button" class="btn btn-secondary mt-2" onclick="ocultarAjuste()">Cancelar</button>
+        </form>
+    </div>
+
+    <script>
+        // Los datos actuales se pasan como JSON para consulta JS
+        const datosActuales = {{ datos_actuales | tojson }};
+        // Muestra el formulario de ajuste con los datos seleccionados y muestra el dato actual
+        function mostrarAjuste(productoId, tipoAjuste, codigoBarras, nombreProducto) {
+            document.getElementById("formAjusteContainer").style.display = "block";
+            document.getElementById("ajuste_producto_id").value = productoId;
+            document.getElementById("ajuste_tipo_ajuste").value = tipoAjuste;
+            let label = "";
+            let actualLabel = "";
+            let actualValor = "";
+
+            if (tipoAjuste == "entrada") {
+                label = "Entrada de producto";
+                actualLabel = "Inventario actual";
+                actualValor = datosActuales[productoId]["inventario"];
+            } else if (tipoAjuste == "salida") {
+                label = "Salida de producto";
+                actualLabel = "Inventario actual";
+                actualValor = datosActuales[productoId]["inventario"];
+            } else {
+                label = "Ajuste de punto de reorden";
+                actualLabel = "Punto de reorden actual";
+                actualValor = datosActuales[productoId]["punto_reorden"];
+            }
+            document.getElementById("ajuste_label_producto").innerText = `${codigoBarras} - ${nombreProducto} (${label})`;
+            document.getElementById("ajuste_cantidad").value = "";
+            document.getElementById("ajuste_actual_container").innerHTML = `<span class="badge bg-secondary">${actualLabel}: ${actualValor}</span>`;
+        }
+        function ocultarAjuste() {
+            document.getElementById("formAjusteContainer").style.display = "none";
+        }
+    </script>
+
+</div>
+{% endblock %}

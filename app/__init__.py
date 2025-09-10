@@ -1,4 +1,3 @@
-# app/__init__.py
 # -*- coding: utf-8 -*-
 from dotenv import load_dotenv
 load_dotenv()
@@ -51,20 +50,25 @@ def create_app():
     from .views.auth import auth_bp
     from .routes.main import main
     from .modules.core.users.usuarios import usuarios_bp
-    from .modules.inventory.products.medicamentos import medicamentos_bp
+    # from .modules.inventory.products.medicamentos import medicamentos_bp
     from .modules.inventory.products.clientes import clientes_bp
     from .modules.inventory.products.proveedores import proveedores_bp
-    from .modules.sales.ventas import ventas_bp
-    from .modules.sales.compras import compras_bp
-    from .modules.sales.facturar import facturar_bp
-    from .modules.nohay import nohay_bp
-    from .modules.inventory.products.inventario import inventario_bp
+
+    # IMPORTA Y ALIAS LOS BLUEPRINTS PRINCIPALES COMO bp:
+    from .modules.sales.ventas import bp as ventas_bp
+    from .modules.sales.compras import bp as compras_bp
+    from .modules.sales.facturar import bp as facturar_bp
+    from .modules.nohay import bp as nohay_bp
+    from .modules.inventory.products.inventario import bp as inventario_bp
+    # from .modules.inventory.products.dispositivos import bp as dispositivos_bp
+    from .modules.inventory.products.productos import bp as productos_bp
+    from app.modules.reportes.informe import bp as informe_bp
 
     # Registrar blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(main)
     app.register_blueprint(usuarios_bp, url_prefix='/usuarios')
-    app.register_blueprint(medicamentos_bp, url_prefix='/medicamentos')
+    # app.register_blueprint(medicamentos_bp, url_prefix='/medicamentos')
     app.register_blueprint(clientes_bp, url_prefix='/clientes')
     app.register_blueprint(proveedores_bp, url_prefix='/proveedores')
     app.register_blueprint(ventas_bp, url_prefix='/ventas')
@@ -72,6 +76,9 @@ def create_app():
     app.register_blueprint(facturar_bp, url_prefix='/facturar')
     app.register_blueprint(nohay_bp, url_prefix='/nohay')
     app.register_blueprint(inventario_bp, url_prefix='/inventario')
+    # app.register_blueprint(dispositivos_bp, url_prefix='/dispositivos')
+    app.register_blueprint(productos_bp, url_prefix='/productos')
+    app.register_blueprint(informe_bp)
 
     return app
 

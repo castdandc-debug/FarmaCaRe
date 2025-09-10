@@ -1,16 +1,17 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app.models import db, NoHay
+from app.extensions import db
+from app.models import NoHay
 
-nohay_bp = Blueprint('nohay', __name__, template_folder='../templates')
+bp = Blueprint('nohay', __name__, url_prefix='/nohay', template_folder='../templates')
 
-@nohay_bp.route('/lista')
+@bp.route('/lista')
 @login_required
 def lista():
     nohays = NoHay.query.all()
     return render_template('nohay.html', nohays=nohays)
 
-@nohay_bp.route('/crear', methods=['GET', 'POST'])
+@bp.route('/crear', methods=['GET', 'POST'])
 @login_required
 def crear():
     if request.method == 'POST':

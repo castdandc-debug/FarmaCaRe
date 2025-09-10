@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from app.models import db, Cliente
+from app.extensions import db
+from app.models import Cliente
 
 clientes_bp = Blueprint('clientes', __name__)
 
@@ -13,24 +14,25 @@ def lista():
 def crear():
     if request.method == 'POST':
         nombre = request.form['nombre']
-        
-        # Usar .get() para campos opcionales. Si no se proveen, el valor será 'Sin dato'
         rfc = request.form.get('rfc', 'Sin dato')
         contacto = request.form.get('contacto', 'Sin dato')
         telefono = request.form.get('telefono', 'Sin dato')
         direccion = request.form.get('direccion', 'Sin dato')
-        
-        # La validación para RFC se debe basar en el RFC proporcionado si no es "Sin dato"
+        email = request.form.get('email', 'Sin dato')
+        telefono_contacto = request.form.get('telefono_contacto', 'Sin dato')
+
         if rfc != 'Sin dato' and Cliente.query.filter_by(rfc=rfc).first():
             flash('Error: RFC ya registrado.')
             return redirect(url_for('clientes.crear'))
-        
+
         cli = Cliente(
             nombre=nombre,
             rfc=rfc,
             contacto=contacto,
             telefono=telefono,
-            direccion=direccion
+            direccion=direccion,
+            email=email,
+            telefono_contacto=telefono_contacto
         )
         db.session.add(cli)
         db.session.commit()
@@ -47,6 +49,8 @@ def editar(id):
         c.contacto = request.form.get('contacto', 'Sin dato')
         c.telefono = request.form.get('telefono', 'Sin dato')
         c.direccion = request.form.get('direccion', 'Sin dato')
+        c.email = request.form.get('email', 'Sin dato')
+        c.telefono_contacto = request.form.get('telefono_contacto', 'Sin dato')
         db.session.commit()
         flash('Cliente actualizado.')
         return redirect(url_for('clientes.lista'))

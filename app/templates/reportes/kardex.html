@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Kardex de Producto - FarmaCaRe{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Reportes e Inventario: Kardex de Productos</h2>
+    
+    <div class="mb-3 d-flex flex-wrap gap-2">
+        <a href="{{ url_for('informe.informe_general') }}" class="btn btn-outline-dark">Informe General</a>
+        <a href="{{ url_for('informe.cortes_caja') }}" class="btn btn-outline-secondary">Cortes de Caja</a>
+        <a href="{{ url_for('informe.ajustes_inventario') }}" class="btn btn-outline-warning">Ajustes de Inventario</a>
+        <a href="{{ url_for('informe.no_hay') }}" class="btn btn-outline-danger">No Hay</a>
+        <a href="{{ url_for('inventario.lista') }}" class="btn btn-outline-success">Inventario</a>
+    </div>
+
+    <form method="get">
+        <div class="input-group mb-3">
+            <input type="text" name="producto" class="form-control" list="productos-list" placeholder="Buscar producto por nombre, código de barras, genérico..." value="{{ busqueda }}">
+            <datalist id="productos-list">
+                {% for prod in productos_sugerencias %}
+                    <option value="{{ prod.nombre_comercial }}">{{ prod.codigo_barras }} - {{ prod.nombre_generico }}</option>
+                {% endfor %}
+            </datalist>
+            <button class="btn btn-primary" type="submit">Buscar</button>
+        </div>
+    </form>
+
+    {% if producto %}
+    <div class="card mb-4">
+        <div class="card-header fw-bold">Datos del producto</div>
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-6"><strong>Código de Barras:</strong> {{ producto.codigo_barras }}</div>
+                <div class="col-md-6"><strong>Nombre Comercial:</strong> {{ producto.nombre_comercial }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-6"><strong>Nombre Genérico:</strong> {{ producto.nombre_generico }}</div>
+                <div class="col-md-6"><strong>Tipo:</strong> {{ producto.tipo }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-6"><strong>Cantidad Actual:</strong> {{ inventario.cantidad if inventario else 0 }}</div>
+            </div>
+        </div>
+    </div>
+
+    <h4>Movimientos</h4>
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo de Movimiento</th>
+                <th>Cantidad</th>
+                <th>Usuario</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mov in movimientos %}
+            <tr>
+                <td>{{ mov.fecha.strftime('%Y-%m-%d %H:%M') if mov.fecha else '' }}</td>
+                <td>{{ mov.tipo }}</td>
+                <td>{{ mov.cantidad }}</td>
+                <td>{{ mov.usuario }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% elif busqueda %}
+    <div class="alert alert-warning">No se encontró el producto buscado.</div>
+    {% endif %}
+</div>
+{% endblock %}
