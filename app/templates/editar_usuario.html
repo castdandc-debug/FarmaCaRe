@@ -1,25 +1,16 @@
 {% extends "base.html" %}
-
-{% block title %}Editar Usuario - FarmaCaRe{% endblock %}
-
 {% block content %}
 <div class="container mt-4">
-    <h2>Editar Usuario</h2>
+    <h2>Cambiar nombre de usuario</h2>
     <form method="POST">
         <div class="mb-3">
-            <label>Nombre de Usuario</label>
-            <input type="text" name="username" class="form-control" value="{{ usuario.username }}" required>
+            <label for="nombre" class="form-label">Nuevo nombre de usuario:</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ user.nombre }}" required>
         </div>
-        <div class="mb-3">
-            <label>Rol</label>
-            <select name="rol" class="form-control" required>
-                <option value="administrador" {% if usuario.rol == "administrador" %}selected{% endif %}>Administrador</option>
-                <option value="farmacéutico" {% if usuario.rol == "farmacéutico" %}selected{% endif %}>Farmacéutico</option>
-                <option value="cajero" {% if usuario.rol == "cajero" %}selected{% endif %}>Cajero</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Actualizar</button>
-        <a href="{{ url_for('usuarios.lista') }}" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a href="{{ url_for('main.profile') }}" class="btn btn-secondary">Cancelar</a>
     </form>
+    <hr>
+    <a href="{{ url_for('main.cambiar_contrasena') }}" class="btn btn-warning">Cambiar contraseña</a>
 </div>
 {% endblock %}

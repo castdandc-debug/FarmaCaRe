@@ -7,9 +7,19 @@
     <h2>Mi Perfil</h2>
     <div class="card">
         <div class="card-body">
-            <p><strong>Nombre:</strong> {{ user.username }}</p>
+            <p><strong>Nombre:</strong> {{ user.nombre }}</p>
+            <p><strong>Usuario:</strong> {{ user.username }}</p>
             <p><strong>Rol:</strong> {{ user.rol }}</p>
-            <a href="{{ url_for('main.editar_perfil') }}" class="btn btn-primary">Editar Perfil</a>
+
+            {% if user.rol == 'Caja' %}
+                <!-- Caja solo puede cambiar usuario y contraseña -->
+                <a href="{{ url_for('main.editar_usuario') }}" class="btn btn-primary">Cambiar nombre de usuario</a>
+                <a href="{{ url_for('main.cambiar_contrasena') }}" class="btn btn-secondary">Cambiar contraseña</a>
+            {% elif user.rol == 'Administrador' %}
+                <!-- Administrador puede editar todo -->
+                <a href="{{ url_for('main.editar_perfil') }}" class="btn btn-primary">Editar Perfil</a>
+                <a href="{{ url_for('main.cambiar_contrasena') }}" class="btn btn-secondary">Cambiar contraseña</a>
+            {% endif %}
         </div>
     </div>
 </div>
