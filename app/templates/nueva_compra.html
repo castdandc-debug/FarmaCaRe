@@ -147,7 +147,7 @@ document.getElementById('busqueda_producto').addEventListener('input', function(
         document.getElementById('resultados_busqueda').innerHTML = '';
         return;
     }
-    fetch(`/compras/compras/buscar_producto?q=${encodeURIComponent(q)}`)
+    fetch(`/compras/buscar_producto?q=${encodeURIComponent(q)}`)
         .then(resp => resp.json())
         .then(data => {
             let resultados = '';
