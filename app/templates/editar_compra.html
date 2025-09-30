@@ -139,7 +139,8 @@ function renderizarCarrito() {
         let fila = document.createElement("tr");
         fila.innerHTML = `
             <td>${item.codigo}</td>
-            <td>${item.nombre}<br>${item.presentacion || ""}</td>
+            <td>${item.nombre}</td>
+            <td>${item.presentacion || ""}</td>
             <td><input type="number" min="1" class="form-control cantidad" value="${item.cantidad}" data-idx="${idx}"></td>
             <td><input type="number" step="0.01" class="form-control precio" value="${item.precio}" data-idx="${idx}"></td>
             <td><input type="number" min="0" max="100" class="form-control iva" value="${item.iva}" data-idx="${idx}"></td>
@@ -238,7 +239,7 @@ document.getElementById('busqueda_producto').addEventListener('input', function(
         document.getElementById('resultados_busqueda').innerHTML = '';
         return;
     }
-    fetch(`/compras/compras/buscar_producto?q=${encodeURIComponent(q)}`)
+    fetch(`/compras/buscar_producto?q=${encodeURIComponent(q)}`)
         .then(resp => resp.json())
         .then(data => {
             let resultados = '';
