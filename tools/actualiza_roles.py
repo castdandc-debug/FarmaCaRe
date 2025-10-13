@@ -4,7 +4,8 @@ from app.models.usuario import Usuario
 
 app = create_app()
 with app.app_context():
-    usuarios_caja = Usuario.query.filter_by(rol="caja").all()
+    # Actualiza todos los roles incorrectos (cajero, caja, etc.) a "Caja"
+    usuarios_caja = Usuario.query.filter(Usuario.rol.in_(["cajero", "caja"])).all()
     for usuario in usuarios_caja:
         usuario.rol = "Caja"
     db.session.commit()
