@@ -14,9 +14,9 @@ def index():
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    if current_user.rol == 'Administrador':
+    if current_user.rol.lower == 'Administrador':
         return render_template('dashboard_admin.html')
-    elif current_user.rol == 'Caja':
+    elif current_user.rol.lower == 'Caja':
         return render_template('dashboard_caja.html')
     else:
         return redirect(url_for('auth.login'))
