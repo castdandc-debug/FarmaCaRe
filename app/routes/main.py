@@ -14,13 +14,13 @@ def index():
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    if current_user.rol.lower == 'Administrador':
+    if current_user.rol.lower() == 'administrador':
         return render_template('dashboard_admin.html')
-    elif current_user.rol.lower == 'Caja':
+    elif current_user.rol.lower() == 'caja':
         return render_template('dashboard_caja.html')
     else:
         return redirect(url_for('auth.login'))
-
+        
 @main.route('/profile')
 @login_required
 def profile():
